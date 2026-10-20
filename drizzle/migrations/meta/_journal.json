@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1792384530819,
+      "tag": "0000_create_nextstep_student_admin_data",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792504667932,
+      "tag": "0001_secure_nextstep_admin_provisioning",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792504764428,
+      "tag": "0002_add_private_first_admin_provisioning",
+      "breakpoints": true
+    }
+  ]
+}
