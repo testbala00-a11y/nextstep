@@ -10,33 +10,232 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminCollegesRouteImport } from './routes/admin.colleges'
+import { Route as AdminCoursesRouteImport } from './routes/admin.courses'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminOfferingsRouteImport } from './routes/admin.offerings'
+import { Route as AdminOnboardingRouteImport } from './routes/admin.onboarding'
+import { Route as AdminResetPasswordRouteImport } from './routes/admin.reset-password'
+import { Route as AdminStaffRouteImport } from './routes/admin.staff'
+import { Route as AdminUpdatePasswordRouteImport } from './routes/admin.update-password'
+import { Route as CollegesIndexRouteImport } from './routes/colleges.index'
+import { Route as CollegesIdRouteImport } from './routes/colleges.$id'
+import { Route as CoursesIndexRouteImport } from './routes/courses.index'
+import { Route as StudentAssessmentRouteImport } from './routes/student.assessment'
+import { Route as StudentDashboardRouteImport } from './routes/student.dashboard'
+import { Route as StudentLoginRouteImport } from './routes/student.login'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCollegesRoute = AdminCollegesRouteImport.update({
+  id: '/admin/colleges',
+  path: '/admin/colleges',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCoursesRoute = AdminCoursesRouteImport.update({
+  id: '/admin/courses',
+  path: '/admin/courses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminOfferingsRoute = AdminOfferingsRouteImport.update({
+  id: '/admin/offerings',
+  path: '/admin/offerings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminOnboardingRoute = AdminOnboardingRouteImport.update({
+  id: '/admin/onboarding',
+  path: '/admin/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminResetPasswordRoute = AdminResetPasswordRouteImport.update({
+  id: '/admin/reset-password',
+  path: '/admin/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminStaffRoute = AdminStaffRouteImport.update({
+  id: '/admin/staff',
+  path: '/admin/staff',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUpdatePasswordRoute = AdminUpdatePasswordRouteImport.update({
+  id: '/admin/update-password',
+  path: '/admin/update-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollegesIndexRoute = CollegesIndexRouteImport.update({
+  id: '/colleges/',
+  path: '/colleges/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollegesIdRoute = CollegesIdRouteImport.update({
+  id: '/colleges/$id',
+  path: '/colleges/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoursesIndexRoute = CoursesIndexRouteImport.update({
+  id: '/courses/',
+  path: '/courses/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentAssessmentRoute = StudentAssessmentRouteImport.update({
+  id: '/student/assessment',
+  path: '/student/assessment',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentDashboardRoute = StudentDashboardRouteImport.update({
+  id: '/student/dashboard',
+  path: '/student/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentLoginRoute = StudentLoginRouteImport.update({
+  id: '/student/login',
+  path: '/student/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin/colleges': typeof AdminCollegesRoute
+  '/admin/courses': typeof AdminCoursesRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/offerings': typeof AdminOfferingsRoute
+  '/admin/onboarding': typeof AdminOnboardingRoute
+  '/admin/reset-password': typeof AdminResetPasswordRoute
+  '/admin/staff': typeof AdminStaffRoute
+  '/admin/update-password': typeof AdminUpdatePasswordRoute
+  '/colleges/$id': typeof CollegesIdRoute
+  '/student/assessment': typeof StudentAssessmentRoute
+  '/student/dashboard': typeof StudentDashboardRoute
+  '/student/login': typeof StudentLoginRoute
+  '/admin/': typeof AdminIndexRoute
+  '/colleges/': typeof CollegesIndexRoute
+  '/courses/': typeof CoursesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin/colleges': typeof AdminCollegesRoute
+  '/admin/courses': typeof AdminCoursesRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/offerings': typeof AdminOfferingsRoute
+  '/admin/onboarding': typeof AdminOnboardingRoute
+  '/admin/reset-password': typeof AdminResetPasswordRoute
+  '/admin/staff': typeof AdminStaffRoute
+  '/admin/update-password': typeof AdminUpdatePasswordRoute
+  '/colleges/$id': typeof CollegesIdRoute
+  '/student/assessment': typeof StudentAssessmentRoute
+  '/student/dashboard': typeof StudentDashboardRoute
+  '/student/login': typeof StudentLoginRoute
+  '/admin': typeof AdminIndexRoute
+  '/colleges': typeof CollegesIndexRoute
+  '/courses': typeof CoursesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin/colleges': typeof AdminCollegesRoute
+  '/admin/courses': typeof AdminCoursesRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/offerings': typeof AdminOfferingsRoute
+  '/admin/onboarding': typeof AdminOnboardingRoute
+  '/admin/reset-password': typeof AdminResetPasswordRoute
+  '/admin/staff': typeof AdminStaffRoute
+  '/admin/update-password': typeof AdminUpdatePasswordRoute
+  '/colleges/$id': typeof CollegesIdRoute
+  '/student/assessment': typeof StudentAssessmentRoute
+  '/student/dashboard': typeof StudentDashboardRoute
+  '/student/login': typeof StudentLoginRoute
+  '/admin/': typeof AdminIndexRoute
+  '/colleges/': typeof CollegesIndexRoute
+  '/courses/': typeof CoursesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin/colleges'
+    | '/admin/courses'
+    | '/admin/login'
+    | '/admin/offerings'
+    | '/admin/onboarding'
+    | '/admin/reset-password'
+    | '/admin/staff'
+    | '/admin/update-password'
+    | '/colleges/$id'
+    | '/student/assessment'
+    | '/student/dashboard'
+    | '/student/login'
+    | '/admin/'
+    | '/colleges/'
+    | '/courses/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin/colleges'
+    | '/admin/courses'
+    | '/admin/login'
+    | '/admin/offerings'
+    | '/admin/onboarding'
+    | '/admin/reset-password'
+    | '/admin/staff'
+    | '/admin/update-password'
+    | '/colleges/$id'
+    | '/student/assessment'
+    | '/student/dashboard'
+    | '/student/login'
+    | '/admin'
+    | '/colleges'
+    | '/courses'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin/colleges'
+    | '/admin/courses'
+    | '/admin/login'
+    | '/admin/offerings'
+    | '/admin/onboarding'
+    | '/admin/reset-password'
+    | '/admin/staff'
+    | '/admin/update-password'
+    | '/colleges/$id'
+    | '/student/assessment'
+    | '/student/dashboard'
+    | '/student/login'
+    | '/admin/'
+    | '/colleges/'
+    | '/courses/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminCollegesRoute: typeof AdminCollegesRoute
+  AdminCoursesRoute: typeof AdminCoursesRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminOfferingsRoute: typeof AdminOfferingsRoute
+  AdminOnboardingRoute: typeof AdminOnboardingRoute
+  AdminResetPasswordRoute: typeof AdminResetPasswordRoute
+  AdminStaffRoute: typeof AdminStaffRoute
+  AdminUpdatePasswordRoute: typeof AdminUpdatePasswordRoute
+  CollegesIdRoute: typeof CollegesIdRoute
+  StudentAssessmentRoute: typeof StudentAssessmentRoute
+  StudentDashboardRoute: typeof StudentDashboardRoute
+  StudentLoginRoute: typeof StudentLoginRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  CollegesIndexRoute: typeof CollegesIndexRoute
+  CoursesIndexRoute: typeof CoursesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +247,131 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/colleges': {
+      id: '/admin/colleges'
+      path: '/admin/colleges'
+      fullPath: '/admin/colleges'
+      preLoaderRoute: typeof AdminCollegesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/courses': {
+      id: '/admin/courses'
+      path: '/admin/courses'
+      fullPath: '/admin/courses'
+      preLoaderRoute: typeof AdminCoursesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/offerings': {
+      id: '/admin/offerings'
+      path: '/admin/offerings'
+      fullPath: '/admin/offerings'
+      preLoaderRoute: typeof AdminOfferingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/onboarding': {
+      id: '/admin/onboarding'
+      path: '/admin/onboarding'
+      fullPath: '/admin/onboarding'
+      preLoaderRoute: typeof AdminOnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/reset-password': {
+      id: '/admin/reset-password'
+      path: '/admin/reset-password'
+      fullPath: '/admin/reset-password'
+      preLoaderRoute: typeof AdminResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/staff': {
+      id: '/admin/staff'
+      path: '/admin/staff'
+      fullPath: '/admin/staff'
+      preLoaderRoute: typeof AdminStaffRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/update-password': {
+      id: '/admin/update-password'
+      path: '/admin/update-password'
+      fullPath: '/admin/update-password'
+      preLoaderRoute: typeof AdminUpdatePasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/colleges/': {
+      id: '/colleges/'
+      path: '/colleges'
+      fullPath: '/colleges/'
+      preLoaderRoute: typeof CollegesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/colleges/$id': {
+      id: '/colleges/$id'
+      path: '/colleges/$id'
+      fullPath: '/colleges/$id'
+      preLoaderRoute: typeof CollegesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/courses/': {
+      id: '/courses/'
+      path: '/courses'
+      fullPath: '/courses/'
+      preLoaderRoute: typeof CoursesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student/assessment': {
+      id: '/student/assessment'
+      path: '/student/assessment'
+      fullPath: '/student/assessment'
+      preLoaderRoute: typeof StudentAssessmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student/dashboard': {
+      id: '/student/dashboard'
+      path: '/student/dashboard'
+      fullPath: '/student/dashboard'
+      preLoaderRoute: typeof StudentDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student/login': {
+      id: '/student/login'
+      path: '/student/login'
+      fullPath: '/student/login'
+      preLoaderRoute: typeof StudentLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminCollegesRoute: AdminCollegesRoute,
+  AdminCoursesRoute: AdminCoursesRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminOfferingsRoute: AdminOfferingsRoute,
+  AdminOnboardingRoute: AdminOnboardingRoute,
+  AdminResetPasswordRoute: AdminResetPasswordRoute,
+  AdminStaffRoute: AdminStaffRoute,
+  AdminUpdatePasswordRoute: AdminUpdatePasswordRoute,
+  CollegesIdRoute: CollegesIdRoute,
+  StudentAssessmentRoute: StudentAssessmentRoute,
+  StudentDashboardRoute: StudentDashboardRoute,
+  StudentLoginRoute: StudentLoginRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  CollegesIndexRoute: CollegesIndexRoute,
+  CoursesIndexRoute: CoursesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
