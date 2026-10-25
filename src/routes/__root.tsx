@@ -75,10 +75,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "NextStep | Your Future Starts Here" },
-      { name: "description", content: "Explore careers, courses, colleges, and your next steps with NextStep." },
+      {
+        name: "description",
+        content: "Explore careers, courses, colleges, and your next steps with NextStep.",
+      },
       { name: "author", content: "NextStep" },
       { property: "og:title", content: "NextStep | Your Future Starts Here" },
-      { property: "og:description", content: "Explore careers, courses, colleges, and your next steps with NextStep." },
+      {
+        property: "og:description",
+        content: "Explore careers, courses, colleges, and your next steps with NextStep.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

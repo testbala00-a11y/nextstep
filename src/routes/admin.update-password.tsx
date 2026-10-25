@@ -1,9 +1,95 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useEffect, useState, type FormEvent } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-export const Route = createFileRoute('/admin/update-password')({component: UpdatePassword});
-function UpdatePassword(){const navigate=useNavigate();const [password,setPassword]=useState('');const [confirm,setConfirm]=useState('');const [error,setError]=useState('');const [ready,setReady]=useState(false);const [saving,setSaving]=useState(false);
- useEffect(()=>{let active=true;supabase.auth.getSession().then(({data})=>{if(active)setReady(!!data.session);});const {data:{subscription}}=supabase.auth.onAuthStateChange((_event,session)=>{if(active)setReady(!!session);});return()=>{active=false;subscription.unsubscribe();};},[]);
- async function submit(e:FormEvent){e.preventDefault();if(password.length<12){setError('Use at least 12 characters.');return;}if(password!==confirm){setError('Passwords do not match.');return;}setSaving(true);setError('');const {error:err}=await supabase.auth.updateUser({password});if(err)setError(err.message);else {await supabase.auth.signOut();navigate({to:'/admin/login'});}setSaving(false);}
- return <div className="flex min-h-screen items-center justify-center bg-slate-50 px-5"><form onSubmit={submit} className="w-full max-w-md space-y-4 rounded-2xl border bg-white p-8 shadow-sm"><h1 className="font-heading text-2xl font-bold text-brand-navy">Choose a new password</h1><p className="text-sm text-slate-600">Open this page from your email recovery link.</p><input type="password" aria-label="New password" autoComplete="new-password" required minLength={12} value={password} onChange={e=>setPassword(e.target.value)} className="w-full rounded-lg border p-3" placeholder="New password (12+ characters)"/><input type="password" aria-label="Confirm password" autoComplete="new-password" required value={confirm} onChange={e=>setConfirm(e.target.value)} className="w-full rounded-lg border p-3" placeholder="Confirm new password"/>{error&&<p role="alert" className="text-sm text-red-600">{error}</p>}{!ready&&<p className="text-sm text-amber-700">Recovery session not available yet. Open your recovery email link.</p>}<button disabled={!ready||saving} className="w-full rounded-lg bg-blue-700 p-3 font-semibold text-white disabled:opacity-50">{saving?'Updating…':'Update password'}</button></form></div>;
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState, type FormEvent } from "react";
+import { supabase } from "@/integrations/supabase/client";
+export const Route = createFileRoute("/admin/update-password")({ component: UpdatePassword });
+function UpdatePassword() {
+  const navigate = useNavigate();
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState("");
+  const [ready, setReady] = useState(false);
+  const [saving, setSaving] = useState(false);
+  useEffect(() => {
+    let active = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (active) setReady(!!data.session);
+    });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (active) setReady(!!session);
+    });
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    if (password.length < 12) {
+      setError("Use at least 12 characters.");
+      return;
+    }
+    if (password !== confirm) {
+      setError("Passwords do not match.");
+      return;
+    }
+    setSaving(true);
+    setError("");
+    const { error: err } = await supabase.auth.updateUser({ password });
+    if (err) setError(err.message);
+    else {
+      await supabase.auth.signOut();
+      navigate({ to: "/admin/login" });
+    }
+    setSaving(false);
+  }
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-5">
+      <form
+        onSubmit={submit}
+        className="w-full max-w-md space-y-4 rounded-2xl border bg-white p-8 shadow-sm"
+      >
+        <h1 className="font-heading text-2xl font-bold text-brand-navy">Choose a new password</h1>
+        <p className="text-sm text-slate-600">Open this page from your email recovery link.</p>
+        <input
+          type="password"
+          aria-label="New password"
+          autoComplete="new-password"
+          required
+          minLength={12}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full rounded-lg border p-3"
+          placeholder="New password (12+ characters)"
+        />
+        <input
+          type="password"
+          aria-label="Confirm password"
+          autoComplete="new-password"
+          required
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          className="w-full rounded-lg border p-3"
+          placeholder="Confirm new password"
+        />
+        {error && (
+          <p role="alert" className="text-sm text-red-600">
+            {error}
+          </p>
+        )}
+        {!ready && (
+          <p className="text-sm text-amber-700">
+            Recovery session not available yet. Open your recovery email link.
+          </p>
+        )}
+        <button
+          disabled={!ready || saving}
+          className="w-full rounded-lg bg-blue-700 p-3 font-semibold text-white disabled:opacity-50"
+        >
+          {saving ? "Updating…" : "Update password"}
+        </button>
+      </form>
+    </div>
+  );
 }

@@ -1,1 +1,64 @@
-import {createFileRoute} from '@tanstack/react-router';import {useEffect,useState} from 'react';import {BookOpen,Search} from 'lucide-react';import {SiteHeader,SiteFooter} from '@/components/SiteHeader';import {getCourses,type Course} from '@/lib/college-data';export const Route=createFileRoute('/courses/')({component:Courses});function Courses(){const [courses,setCourses]=useState<Course[]>([]);const [q,setQ]=useState('');const [error,setError]=useState('');useEffect(()=>{getCourses().then(setCourses).catch(e=>setError(e.message))},[]);return <div className="flex min-h-screen flex-col bg-slate-50"><SiteHeader/><main className="mx-auto w-full max-w-6xl flex-1 px-5 py-12"><p className="font-semibold text-emerald-700">Find your study path</p><h1 className="mt-2 text-4xl font-bold text-brand-navy">Explore courses</h1><div className="my-8 flex max-w-xl items-center gap-2 rounded-xl border bg-white p-3"><Search size={20}/><input aria-label="Search courses" className="w-full outline-none" placeholder="Search degree or subject" value={q} onChange={e=>setQ(e.target.value)}/></div>{error&&<p role="alert" className="text-red-700">{error}</p>}<div className="grid gap-4 md:grid-cols-2">{courses.filter(c=>(c.name+c.description).toLowerCase().includes(q.toLowerCase())).map(c=><article key={c.id} className="rounded-xl border bg-white p-6"><BookOpen className="mb-3 text-blue-700"/><h2 className="text-xl font-bold">{c.name}</h2><p className="mt-2 text-sm text-slate-500">{[c.credential,c.duration].filter(Boolean).join(' · ')}</p><p className="mt-3 text-slate-600">{c.description}</p><p className="mt-4 text-sm"><strong>Eligibility: </strong>{c.entry_requirements||'Contact the institution'}</p></article>)}</div>{!error&&courses.length===0&&<p className="rounded-xl border bg-white p-6 text-slate-600">No published courses yet. Admins can add courses in the dashboard.</p>}</main><SiteFooter/></div>}
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { BookOpen, Search } from "lucide-react";
+import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
+import { getCourses, type Course } from "@/lib/college-data";
+export const Route = createFileRoute("/courses/")({ component: Courses });
+function Courses() {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [q, setQ] = useState("");
+  const [error, setError] = useState("");
+  useEffect(() => {
+    getCourses()
+      .then(setCourses)
+      .catch((e) => setError(e.message));
+  }, []);
+  return (
+    <div className="flex min-h-screen flex-col bg-slate-50">
+      <SiteHeader />
+      <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-12">
+        <p className="font-semibold text-emerald-700">Find your study path</p>
+        <h1 className="mt-2 text-4xl font-bold text-brand-navy">Explore courses</h1>
+        <div className="my-8 flex max-w-xl items-center gap-2 rounded-xl border bg-white p-3">
+          <Search size={20} />
+          <input
+            aria-label="Search courses"
+            className="w-full outline-none"
+            placeholder="Search degree or subject"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+          />
+        </div>
+        {error && (
+          <p role="alert" className="text-red-700">
+            {error}
+          </p>
+        )}
+        <div className="grid gap-4 md:grid-cols-2">
+          {courses
+            .filter((c) => (c.name + c.description).toLowerCase().includes(q.toLowerCase()))
+            .map((c) => (
+              <article key={c.id} className="rounded-xl border bg-white p-6">
+                <BookOpen className="mb-3 text-blue-700" />
+                <h2 className="text-xl font-bold">{c.name}</h2>
+                <p className="mt-2 text-sm text-slate-500">
+                  {[c.credential, c.duration].filter(Boolean).join(" · ")}
+                </p>
+                <p className="mt-3 text-slate-600">{c.description}</p>
+                <p className="mt-4 text-sm">
+                  <strong>Eligibility: </strong>
+                  {c.entry_requirements || "Contact the institution"}
+                </p>
+              </article>
+            ))}
+        </div>
+        {!error && courses.length === 0 && (
+          <p className="rounded-xl border bg-white p-6 text-slate-600">
+            No published courses yet. Admins can add courses in the dashboard.
+          </p>
+        )}
+      </main>
+      <SiteFooter />
+    </div>
+  );
+}

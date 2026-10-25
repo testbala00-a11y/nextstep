@@ -1,8 +1,65 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { useState, type FormEvent } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-export const Route = createFileRoute('/admin/reset-password')({component: Reset});
-function Reset(){const [email,setEmail]=useState('');const [sent,setSent]=useState(false);const [error,setError]=useState('');const [loading,setLoading]=useState(false);
- async function submit(e:FormEvent){e.preventDefault();setLoading(true);setError('');const {error:err}=await supabase.auth.resetPasswordForEmail(email.trim(),{redirectTo:`${window.location.origin}/admin/update-password`});if(err)setError(err.message);else setSent(true);setLoading(false);}
- return <div className="flex min-h-screen items-center justify-center bg-slate-50 px-5"><div className="w-full max-w-md rounded-2xl border bg-white p-8 shadow-sm"><h1 className="font-heading text-2xl font-bold text-brand-navy">Reset administrator password</h1><p className="mt-2 text-sm text-slate-600">Enter your account email to receive a recovery link. Only authorized admin accounts can enter the dashboard.</p>{sent?<p role="status" className="mt-6 rounded-lg bg-emerald-50 p-4 text-emerald-800">If the account exists, recovery instructions have been sent.</p>:<form onSubmit={submit} className="mt-6 space-y-4"><input type="email" aria-label="Email" required value={email} onChange={e=>setEmail(e.target.value)} className="w-full rounded-lg border px-4 py-3" placeholder="Email address"/>{error&&<p role="alert" className="text-sm text-red-600">{error}</p>}<button disabled={loading} className="w-full rounded-lg bg-blue-700 px-4 py-3 font-semibold text-white">{loading?'Sending…':'Send recovery link'}</button></form>}<Link className="mt-5 inline-block text-sm text-blue-700" to="/admin/login">Back to admin sign in</Link></div></div>;
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState, type FormEvent } from "react";
+import { supabase } from "@/integrations/supabase/client";
+export const Route = createFileRoute("/admin/reset-password")({ component: Reset });
+function Reset() {
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/admin/update-password`,
+    });
+    if (err) setError(err.message);
+    else setSent(true);
+    setLoading(false);
+  }
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-5">
+      <div className="w-full max-w-md rounded-2xl border bg-white p-8 shadow-sm">
+        <h1 className="font-heading text-2xl font-bold text-brand-navy">
+          Reset administrator password
+        </h1>
+        <p className="mt-2 text-sm text-slate-600">
+          Enter your account email to receive a recovery link. Only authorized admin accounts can
+          enter the dashboard.
+        </p>
+        {sent ? (
+          <p role="status" className="mt-6 rounded-lg bg-emerald-50 p-4 text-emerald-800">
+            If the account exists, recovery instructions have been sent.
+          </p>
+        ) : (
+          <form onSubmit={submit} className="mt-6 space-y-4">
+            <input
+              type="email"
+              aria-label="Email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-lg border px-4 py-3"
+              placeholder="Email address"
+            />
+            {error && (
+              <p role="alert" className="text-sm text-red-600">
+                {error}
+              </p>
+            )}
+            <button
+              disabled={loading}
+              className="w-full rounded-lg bg-blue-700 px-4 py-3 font-semibold text-white"
+            >
+              {loading ? "Sending…" : "Send recovery link"}
+            </button>
+          </form>
+        )}
+        <Link className="mt-5 inline-block text-sm text-blue-700" to="/admin/login">
+          Back to admin sign in
+        </Link>
+      </div>
+    </div>
+  );
 }
