@@ -80,7 +80,7 @@ function Index() {
           </nav>
           <Button asChild size="sm" className="h-10 gap-2 px-4">
             <a href="/student/login">
-              Get started <ArrowRight aria-hidden="true" />
+              Login <ArrowRight aria-hidden="true" />
             </a>
           </Button>
         </div>
@@ -262,14 +262,6 @@ function Index() {
         </div>
       </section>
 
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-4 px-5 py-7">
-        <a href="/student/login" className="rounded-lg bg-blue-700 px-5 py-3 font-bold text-white">
-          Student sign in
-        </a>
-        <a href="/admin/login" className="rounded-lg border px-5 py-3 font-bold text-blue-700">
-          Admin portal
-        </a>
-      </div>
       <footer className="border-t border-border bg-card px-5 py-6 sm:px-8">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <Brand compact />

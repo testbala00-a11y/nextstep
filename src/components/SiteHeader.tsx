@@ -19,14 +19,11 @@ export function SiteHeader() {
           <Link to="/student/assessment" className="hover:text-blue-700">
             Plan my next step
           </Link>
-          <Link to="/student/login" className="hover:text-blue-700">
-            Student login
-          </Link>
           <Link
-            to="/admin/login"
-            className="rounded-lg bg-blue-700 px-3 py-2 text-white hover:bg-blue-800"
+            to="/student/login"
+            className="rounded-lg bg-blue-700 px-4 py-2 text-white hover:bg-blue-800"
           >
-            Admin <ArrowRight size={14} className="inline" />
+            Login <ArrowRight size={14} className="inline" />
           </Link>
         </nav>
       </div>

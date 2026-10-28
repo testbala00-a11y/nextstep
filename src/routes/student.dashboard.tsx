@@ -20,9 +20,14 @@ function Page() {
         }
         const { data: p } = await supabase
           .from("profiles")
-          .select("full_name")
+          .select("full_name,phone,user_type")
           .eq("id", data.user.id)
           .maybeSingle();
+        // First sign-in (e.g. via Google): collect contact details before continuing.
+        if (!p?.phone || !p.user_type) {
+          go({ to: "/student/details" });
+          return;
+        }
         setName(p?.full_name || data.user.user_metadata?.["full_name"] || "Student");
       })
       .catch((e) => setError(e.message))

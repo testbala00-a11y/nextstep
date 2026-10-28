@@ -17,12 +17,14 @@ import { Route as AdminOnboardingRouteImport } from './routes/admin.onboarding'
 import { Route as AdminResetPasswordRouteImport } from './routes/admin.reset-password'
 import { Route as AdminStaffRouteImport } from './routes/admin.staff'
 import { Route as AdminUpdatePasswordRouteImport } from './routes/admin.update-password'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as CollegesIndexRouteImport } from './routes/colleges.index'
 import { Route as CollegesIdRouteImport } from './routes/colleges.$id'
 import { Route as CollegesCompareRouteImport } from './routes/colleges.compare'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as StudentAssessmentRouteImport } from './routes/student.assessment'
 import { Route as StudentDashboardRouteImport } from './routes/student.dashboard'
+import { Route as StudentDetailsRouteImport } from './routes/student.details'
 import { Route as StudentLoginRouteImport } from './routes/student.login'
 
 const IndexRoute = IndexRouteImport.update({
@@ -65,6 +67,11 @@ const AdminUpdatePasswordRoute = AdminUpdatePasswordRouteImport.update({
   path: '/admin/update-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CollegesIndexRoute = CollegesIndexRouteImport.update({
   id: '/colleges/',
   path: '/colleges/',
@@ -95,6 +102,11 @@ const StudentDashboardRoute = StudentDashboardRouteImport.update({
   path: '/student/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StudentDetailsRoute = StudentDetailsRouteImport.update({
+  id: '/student/details',
+  path: '/student/details',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudentLoginRoute = StudentLoginRouteImport.update({
   id: '/student/login',
   path: '/student/login',
@@ -109,10 +121,12 @@ export interface FileRoutesByFullPath {
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/staff': typeof AdminStaffRoute
   '/admin/update-password': typeof AdminUpdatePasswordRoute
+  '/admin/users': typeof AdminUsersRoute
   '/colleges/$id': typeof CollegesIdRoute
   '/colleges/compare': typeof CollegesCompareRoute
   '/student/assessment': typeof StudentAssessmentRoute
   '/student/dashboard': typeof StudentDashboardRoute
+  '/student/details': typeof StudentDetailsRoute
   '/student/login': typeof StudentLoginRoute
   '/admin/': typeof AdminIndexRoute
   '/colleges/': typeof CollegesIndexRoute
@@ -126,10 +140,12 @@ export interface FileRoutesByTo {
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/staff': typeof AdminStaffRoute
   '/admin/update-password': typeof AdminUpdatePasswordRoute
+  '/admin/users': typeof AdminUsersRoute
   '/colleges/$id': typeof CollegesIdRoute
   '/colleges/compare': typeof CollegesCompareRoute
   '/student/assessment': typeof StudentAssessmentRoute
   '/student/dashboard': typeof StudentDashboardRoute
+  '/student/details': typeof StudentDetailsRoute
   '/student/login': typeof StudentLoginRoute
   '/admin': typeof AdminIndexRoute
   '/colleges': typeof CollegesIndexRoute
@@ -144,10 +160,12 @@ export interface FileRoutesById {
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/staff': typeof AdminStaffRoute
   '/admin/update-password': typeof AdminUpdatePasswordRoute
+  '/admin/users': typeof AdminUsersRoute
   '/colleges/$id': typeof CollegesIdRoute
   '/colleges/compare': typeof CollegesCompareRoute
   '/student/assessment': typeof StudentAssessmentRoute
   '/student/dashboard': typeof StudentDashboardRoute
+  '/student/details': typeof StudentDetailsRoute
   '/student/login': typeof StudentLoginRoute
   '/admin/': typeof AdminIndexRoute
   '/colleges/': typeof CollegesIndexRoute
@@ -163,10 +181,12 @@ export interface FileRouteTypes {
     | '/admin/reset-password'
     | '/admin/staff'
     | '/admin/update-password'
+    | '/admin/users'
     | '/colleges/$id'
     | '/colleges/compare'
     | '/student/assessment'
     | '/student/dashboard'
+    | '/student/details'
     | '/student/login'
     | '/admin/'
     | '/colleges/'
@@ -180,10 +200,12 @@ export interface FileRouteTypes {
     | '/admin/reset-password'
     | '/admin/staff'
     | '/admin/update-password'
+    | '/admin/users'
     | '/colleges/$id'
     | '/colleges/compare'
     | '/student/assessment'
     | '/student/dashboard'
+    | '/student/details'
     | '/student/login'
     | '/admin'
     | '/colleges'
@@ -197,10 +219,12 @@ export interface FileRouteTypes {
     | '/admin/reset-password'
     | '/admin/staff'
     | '/admin/update-password'
+    | '/admin/users'
     | '/colleges/$id'
     | '/colleges/compare'
     | '/student/assessment'
     | '/student/dashboard'
+    | '/student/details'
     | '/student/login'
     | '/admin/'
     | '/colleges/'
@@ -215,10 +239,12 @@ export interface RootRouteChildren {
   AdminResetPasswordRoute: typeof AdminResetPasswordRoute
   AdminStaffRoute: typeof AdminStaffRoute
   AdminUpdatePasswordRoute: typeof AdminUpdatePasswordRoute
+  AdminUsersRoute: typeof AdminUsersRoute
   CollegesIdRoute: typeof CollegesIdRoute
   CollegesCompareRoute: typeof CollegesCompareRoute
   StudentAssessmentRoute: typeof StudentAssessmentRoute
   StudentDashboardRoute: typeof StudentDashboardRoute
+  StudentDetailsRoute: typeof StudentDetailsRoute
   StudentLoginRoute: typeof StudentLoginRoute
   AdminIndexRoute: typeof AdminIndexRoute
   CollegesIndexRoute: typeof CollegesIndexRoute
@@ -283,6 +309,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUpdatePasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/colleges/': {
       id: '/colleges/'
       path: '/colleges'
@@ -325,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/student/details': {
+      id: '/student/details'
+      path: '/student/details'
+      fullPath: '/student/details'
+      preLoaderRoute: typeof StudentDetailsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/student/login': {
       id: '/student/login'
       path: '/student/login'
@@ -343,10 +383,12 @@ const rootRouteChildren: RootRouteChildren = {
   AdminResetPasswordRoute: AdminResetPasswordRoute,
   AdminStaffRoute: AdminStaffRoute,
   AdminUpdatePasswordRoute: AdminUpdatePasswordRoute,
+  AdminUsersRoute: AdminUsersRoute,
   CollegesIdRoute: CollegesIdRoute,
   CollegesCompareRoute: CollegesCompareRoute,
   StudentAssessmentRoute: StudentAssessmentRoute,
   StudentDashboardRoute: StudentDashboardRoute,
+  StudentDetailsRoute: StudentDetailsRoute,
   StudentLoginRoute: StudentLoginRoute,
   AdminIndexRoute: AdminIndexRoute,
   CollegesIndexRoute: CollegesIndexRoute,

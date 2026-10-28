@@ -6,6 +6,7 @@ import {
   GraduationCap,
   ShieldCheck,
   Users,
+  Contact,
   Building2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -49,6 +50,14 @@ export function AdminShell({
           >
             <Building2 size={18} /> Colleges
           </Link>
+          {isSuperAdmin && (
+            <Link
+              to="/admin/users"
+              className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold text-blue-800 hover:bg-blue-50"
+            >
+              <Contact size={18} /> Students &amp; parents
+            </Link>
+          )}
           {isSuperAdmin && (
             <Link
               to="/admin/staff"

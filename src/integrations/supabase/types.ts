@@ -448,6 +448,8 @@ export type Database = {
           created_at: string;
           district: string | null;
           fee_budget: number | null;
+          phone: string | null;
+          user_type: string | null;
           preferred_states: string[];
           preferred_level: string | null;
           exams_taken: string[];
@@ -463,6 +465,8 @@ export type Database = {
           created_at?: string;
           district?: string | null;
           fee_budget?: number | null;
+          phone?: string | null;
+          user_type?: string | null;
           preferred_states?: string[];
           preferred_level?: string | null;
           exams_taken?: string[];
@@ -478,6 +482,8 @@ export type Database = {
           created_at?: string;
           district?: string | null;
           fee_budget?: number | null;
+          phone?: string | null;
+          user_type?: string | null;
           preferred_states?: string[];
           preferred_level?: string | null;
           exams_taken?: string[];
@@ -584,6 +590,19 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      list_nextstep_users: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          user_id: string;
+          full_name: string | null;
+          email: string;
+          phone: string | null;
+          user_type: string | null;
+          sign_in_method: string;
+          signed_up_at: string;
+          last_sign_in_at: string | null;
+        }[];
+      };
       is_nextstep_super_admin: {
         Args: { _user: string };
         Returns: boolean;
