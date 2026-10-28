@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
+import { StudentWorkspace } from "@/components/StudentWorkspace";
 import { supabase } from "@/integrations/supabase/client";
 import { BookOpen, Building2, Compass, LogOut } from "lucide-react";
 export const Route = createFileRoute("/student/dashboard")({ component: Page });
@@ -72,8 +73,8 @@ function Page() {
                 {
                   to: "/student/assessment" as const,
                   icon: Compass,
-                  title: "Career discovery",
-                  text: "Answer a short interest quiz and receive starting-point suggestions.",
+                  title: "Plan my next step",
+                  text: "Get courses and colleges matched to your interests, budget and location.",
                 },
               ].map((x) => (
                 <Link
@@ -88,6 +89,7 @@ function Page() {
                 </Link>
               ))}
             </div>
+            <StudentWorkspace />
           </>
         )}
       </main>

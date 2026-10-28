@@ -75,7 +75,7 @@ function Index() {
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               href="/student/assessment"
             >
-              Career Quiz
+              Plan my next step
             </a>
           </nav>
           <Button asChild size="sm" className="h-10 gap-2 px-4">

@@ -448,6 +448,9 @@ export type Database = {
           created_at: string;
           district: string | null;
           fee_budget: number | null;
+          preferred_states: string[];
+          preferred_level: string | null;
+          exams_taken: string[];
           full_name: string | null;
           id: string;
           interests: string[];
@@ -460,6 +463,9 @@ export type Database = {
           created_at?: string;
           district?: string | null;
           fee_budget?: number | null;
+          preferred_states?: string[];
+          preferred_level?: string | null;
+          exams_taken?: string[];
           full_name?: string | null;
           id: string;
           interests?: string[];
@@ -472,6 +478,9 @@ export type Database = {
           created_at?: string;
           district?: string | null;
           fee_budget?: number | null;
+          preferred_states?: string[];
+          preferred_level?: string | null;
+          exams_taken?: string[];
           full_name?: string | null;
           id?: string;
           interests?: string[];

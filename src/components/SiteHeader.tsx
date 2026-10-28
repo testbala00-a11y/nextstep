@@ -17,7 +17,7 @@ export function SiteHeader() {
             Courses
           </Link>
           <Link to="/student/assessment" className="hover:text-blue-700">
-            Career Quiz
+            Plan my next step
           </Link>
           <Link to="/student/login" className="hover:text-blue-700">
             Student login
