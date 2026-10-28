@@ -274,6 +274,9 @@ export type Database = {
           stream: string | null;
           duration: string | null;
           seats: number | null;
+          total_fee: number | null;
+          cutoff: string | null;
+          study_mode: string | null;
           eligibility: string | null;
           entrance_exams: string | null;
           sort_order: number;
@@ -291,6 +294,9 @@ export type Database = {
           stream?: string | null;
           duration?: string | null;
           seats?: number | null;
+          total_fee?: number | null;
+          cutoff?: string | null;
+          study_mode?: string | null;
           eligibility?: string | null;
           entrance_exams?: string | null;
           sort_order?: number;
@@ -308,6 +314,9 @@ export type Database = {
           stream?: string | null;
           duration?: string | null;
           seats?: number | null;
+          total_fee?: number | null;
+          cutoff?: string | null;
+          study_mode?: string | null;
           eligibility?: string | null;
           entrance_exams?: string | null;
           sort_order?: number;
@@ -344,6 +353,7 @@ export type Database = {
           created_at: string;
           description: string;
           district: string;
+          state: string;
           fee_last_verified_at: string | null;
           fee_source_url: string | null;
           fee_verified: boolean;
@@ -363,6 +373,7 @@ export type Database = {
           created_at?: string;
           description?: string;
           district?: string;
+          state?: string;
           fee_last_verified_at?: string | null;
           fee_source_url?: string | null;
           fee_verified?: boolean;
@@ -382,6 +393,7 @@ export type Database = {
           created_at?: string;
           description?: string;
           district?: string;
+          state?: string;
           fee_last_verified_at?: string | null;
           fee_source_url?: string | null;
           fee_verified?: boolean;

@@ -19,6 +19,7 @@ import { Route as AdminStaffRouteImport } from './routes/admin.staff'
 import { Route as AdminUpdatePasswordRouteImport } from './routes/admin.update-password'
 import { Route as CollegesIndexRouteImport } from './routes/colleges.index'
 import { Route as CollegesIdRouteImport } from './routes/colleges.$id'
+import { Route as CollegesCompareRouteImport } from './routes/colleges.compare'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as StudentAssessmentRouteImport } from './routes/student.assessment'
 import { Route as StudentDashboardRouteImport } from './routes/student.dashboard'
@@ -74,6 +75,11 @@ const CollegesIdRoute = CollegesIdRouteImport.update({
   path: '/colleges/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollegesCompareRoute = CollegesCompareRouteImport.update({
+  id: '/colleges/compare',
+  path: '/colleges/compare',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CoursesIndexRoute = CoursesIndexRouteImport.update({
   id: '/courses/',
   path: '/courses/',
@@ -104,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/admin/staff': typeof AdminStaffRoute
   '/admin/update-password': typeof AdminUpdatePasswordRoute
   '/colleges/$id': typeof CollegesIdRoute
+  '/colleges/compare': typeof CollegesCompareRoute
   '/student/assessment': typeof StudentAssessmentRoute
   '/student/dashboard': typeof StudentDashboardRoute
   '/student/login': typeof StudentLoginRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/admin/staff': typeof AdminStaffRoute
   '/admin/update-password': typeof AdminUpdatePasswordRoute
   '/colleges/$id': typeof CollegesIdRoute
+  '/colleges/compare': typeof CollegesCompareRoute
   '/student/assessment': typeof StudentAssessmentRoute
   '/student/dashboard': typeof StudentDashboardRoute
   '/student/login': typeof StudentLoginRoute
@@ -137,6 +145,7 @@ export interface FileRoutesById {
   '/admin/staff': typeof AdminStaffRoute
   '/admin/update-password': typeof AdminUpdatePasswordRoute
   '/colleges/$id': typeof CollegesIdRoute
+  '/colleges/compare': typeof CollegesCompareRoute
   '/student/assessment': typeof StudentAssessmentRoute
   '/student/dashboard': typeof StudentDashboardRoute
   '/student/login': typeof StudentLoginRoute
@@ -155,6 +164,7 @@ export interface FileRouteTypes {
     | '/admin/staff'
     | '/admin/update-password'
     | '/colleges/$id'
+    | '/colleges/compare'
     | '/student/assessment'
     | '/student/dashboard'
     | '/student/login'
@@ -171,6 +181,7 @@ export interface FileRouteTypes {
     | '/admin/staff'
     | '/admin/update-password'
     | '/colleges/$id'
+    | '/colleges/compare'
     | '/student/assessment'
     | '/student/dashboard'
     | '/student/login'
@@ -187,6 +198,7 @@ export interface FileRouteTypes {
     | '/admin/staff'
     | '/admin/update-password'
     | '/colleges/$id'
+    | '/colleges/compare'
     | '/student/assessment'
     | '/student/dashboard'
     | '/student/login'
@@ -204,6 +216,7 @@ export interface RootRouteChildren {
   AdminStaffRoute: typeof AdminStaffRoute
   AdminUpdatePasswordRoute: typeof AdminUpdatePasswordRoute
   CollegesIdRoute: typeof CollegesIdRoute
+  CollegesCompareRoute: typeof CollegesCompareRoute
   StudentAssessmentRoute: typeof StudentAssessmentRoute
   StudentDashboardRoute: typeof StudentDashboardRoute
   StudentLoginRoute: typeof StudentLoginRoute
@@ -284,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollegesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/colleges/compare': {
+      id: '/colleges/compare'
+      path: '/colleges/compare'
+      fullPath: '/colleges/compare'
+      preLoaderRoute: typeof CollegesCompareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/courses/': {
       id: '/courses/'
       path: '/courses'
@@ -324,6 +344,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminStaffRoute: AdminStaffRoute,
   AdminUpdatePasswordRoute: AdminUpdatePasswordRoute,
   CollegesIdRoute: CollegesIdRoute,
+  CollegesCompareRoute: CollegesCompareRoute,
   StudentAssessmentRoute: StudentAssessmentRoute,
   StudentDashboardRoute: StudentDashboardRoute,
   StudentLoginRoute: StudentLoginRoute,

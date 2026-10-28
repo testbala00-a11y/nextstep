@@ -7,6 +7,7 @@ import {
   getColleges,
   getCollegeCourses,
   externalUrl,
+  INDIAN_STATES,
   type College,
   type CollegeCourse,
 } from "@/lib/college-data";
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/admin/colleges")({ component: Page });
 const blank = {
   name: "",
   district: "",
+  state: "",
   college_type: "",
   address: "",
   description: "",
@@ -33,6 +35,9 @@ type CourseRow = {
   duration: string;
   seats: string;
   tuition_fee: string;
+  total_fee: string;
+  cutoff: string;
+  study_mode: string;
   eligibility: string;
   entrance_exams: string;
   fee_notes: string;
@@ -45,6 +50,9 @@ const blankCourse = (): CourseRow => ({
   duration: "",
   seats: "",
   tuition_fee: "",
+  total_fee: "",
+  cutoff: "",
+  study_mode: "Full-time",
   eligibility: "",
   entrance_exams: "",
   fee_notes: "",
@@ -58,6 +66,9 @@ const toRow = (c: CollegeCourse): CourseRow => ({
   duration: c.duration || "",
   seats: c.seats?.toString() || "",
   tuition_fee: c.tuition_fee?.toString() || "",
+  total_fee: c.total_fee?.toString() || "",
+  cutoff: c.cutoff || "",
+  study_mode: c.study_mode || "",
   eligibility: c.eligibility || "",
   entrance_exams: c.entrance_exams || "",
   fee_notes: c.fee_notes || "",
@@ -73,6 +84,8 @@ const courseFields = [
   ["duration", "Duration", "4 years", "text"],
   ["seats", "Seats", "120", "number"],
   ["tuition_fee", "Annual fee (INR)", "150000", "number"],
+  ["total_fee", "Total course fee (INR)", "600000", "number"],
+  ["cutoff", "Cutoff", "JEE rank 15000 / 85%", "text"],
   ["entrance_exams", "Entrance exams", "JEE Main, TNEA", "text"],
   ["eligibility", "Eligibility", "10+2 PCM, 60%", "text"],
   ["fee_notes", "Fee notes", "Excludes hostel", "text"],
@@ -85,7 +98,7 @@ function Page() {
   );
 }
 function Colleges() {
-  const { isSuperAdmin, userId } = useAdminAccess();
+  const { userId } = useAdminAccess();
   const [items, setItems] = useState<College[]>([]);
   const [courseCounts, setCourseCounts] = useState<Record<string, number>>({});
   const [form, setForm] = useState({ ...blank });
@@ -125,6 +138,7 @@ function Colleges() {
     setForm({
       name: c.name,
       district: c.district,
+      state: c.state || "",
       college_type: c.college_type,
       address: c.address || "",
       description: c.description,
@@ -189,6 +203,7 @@ function Colleges() {
       const payload = {
         name: form.name.trim(),
         district: form.district.trim(),
+        state: form.state,
         college_type: form.college_type.trim(),
         address: form.address.trim() || null,
         description: form.description.trim(),
@@ -214,6 +229,9 @@ function Colleges() {
           duration: c.duration.trim() || null,
           seats: optionalNumber(c.seats, `Seats for ${c.course_name}`),
           tuition_fee: optionalNumber(c.tuition_fee, `Fee for ${c.course_name}`),
+          total_fee: optionalNumber(c.total_fee, `Total fee for ${c.course_name}`),
+          cutoff: c.cutoff.trim() || null,
+          study_mode: c.study_mode || null,
           eligibility: c.eligibility.trim() || null,
           entrance_exams: c.entrance_exams.trim() || null,
           fee_notes: c.fee_notes.trim() || null,
@@ -311,7 +329,7 @@ function Colleges() {
             {(
               [
                 ["name", "College name *"],
-                ["district", "District / city"],
+                ["district", "City / district"],
                 ["college_type", "College type"],
                 ["address", "Street address"],
                 ["annual_fee", "Indicative annual fees (INR)"],
@@ -333,6 +351,19 @@ function Colleges() {
               </label>
             ))}
           </div>
+          <label className="block text-sm font-medium md:w-1/2">
+            State / UT
+            <select
+              value={form.state}
+              onChange={(e) => update("state", e.target.value)}
+              className="mt-1 w-full rounded-lg border px-3 py-2.5"
+            >
+              <option value="">Select state</option>
+              {INDIAN_STATES.map((st) => (
+                <option key={st}>{st}</option>
+              ))}
+            </select>
+          </label>
           <label className="block text-sm font-medium">
             Description
             <textarea
@@ -383,6 +414,19 @@ function Colleges() {
                         <option value="">—</option>
                         {LEVELS.map((l) => (
                           <option key={l}>{l}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="block text-xs font-medium">
+                      Mode
+                      <select
+                        value={c.study_mode}
+                        onChange={(e) => updateCourse(c.key, "study_mode", e.target.value)}
+                        className="mt-1 w-full rounded-lg border px-3 py-2"
+                      >
+                        <option value="">—</option>
+                        {["Full-time", "Part-time", "Distance", "Online"].map((m) => (
+                          <option key={m}>{m}</option>
                         ))}
                       </select>
                     </label>
@@ -472,7 +516,7 @@ function Colleges() {
             <div className="min-w-0 flex-1">
               <h2 className="font-bold">{c.name}</h2>
               <p className="text-sm text-slate-500">
-                {[c.district, c.college_type, c.status].filter(Boolean).join(" · ")} ·{" "}
+                {[c.district, c.state, c.college_type, c.status].filter(Boolean).join(" · ")} ·{" "}
                 {courseCounts[c.id] || 0} course{courseCounts[c.id] === 1 ? "" : "s"}
               </p>
             </div>
@@ -483,15 +527,13 @@ function Colleges() {
             >
               <Edit2 size={18} />
             </button>
-            {isSuperAdmin && (
-              <button
-                onClick={() => remove(c)}
-                className="rounded-lg border p-2 text-red-700"
-                aria-label={`Delete ${c.name}`}
-              >
-                <Trash2 size={18} />
-              </button>
-            )}
+            <button
+              onClick={() => remove(c)}
+              className="rounded-lg border p-2 text-red-700"
+              aria-label={`Delete ${c.name}`}
+            >
+              <Trash2 size={18} />
+            </button>
           </article>
         ))}
         {!items.length && (

@@ -3,6 +3,7 @@ export type College = {
   id: string;
   name: string;
   district: string;
+  state?: string;
   college_type: string;
   address: string | null;
   description: string;
@@ -30,6 +31,9 @@ export type CollegeCourse = {
   stream: string | null;
   duration: string | null;
   seats: number | null;
+  total_fee: number | null;
+  cutoff: string | null;
+  study_mode: string | null;
   eligibility: string | null;
   entrance_exams: string | null;
   tuition_fee: number | null;
@@ -67,3 +71,71 @@ export function externalUrl(s: string | null | undefined) {
     return undefined;
   }
 }
+export type CourseSummary = {
+  count: number;
+  minFee: number | null;
+  maxFee: number | null;
+  levels: string[];
+  streams: string[];
+  exams: string[];
+};
+const uniq = (xs: (string | null | undefined)[]) =>
+  Array.from(new Set(xs.map((x) => x?.trim()).filter((x): x is string => !!x))).sort();
+export const splitExams = (s: string | null) => (s ? s.split(/[,;/]/) : []);
+export function summarize(courses: CollegeCourse[]): CourseSummary {
+  const fees = courses.map((c) => c.tuition_fee).filter((f): f is number => f != null);
+  return {
+    count: courses.length,
+    minFee: fees.length ? Math.min(...fees) : null,
+    maxFee: fees.length ? Math.max(...fees) : null,
+    levels: uniq(courses.map((c) => c.level)),
+    streams: uniq(courses.map((c) => c.stream)),
+    exams: uniq(courses.flatMap((c) => splitExams(c.entrance_exams))),
+  };
+}
+const lakh = (n: number) =>
+  n >= 100000 ? `₹${(n / 100000).toFixed(n % 100000 ? 1 : 0)} L` : `₹${n.toLocaleString("en-IN")}`;
+export function feeRange(s: Pick<CourseSummary, "minFee" | "maxFee">) {
+  if (s.minFee == null || s.maxFee == null) return "Fees on request";
+  return s.minFee === s.maxFee
+    ? `${lakh(s.minFee)}/yr`
+    : `${lakh(s.minFee)} – ${lakh(s.maxFee)}/yr`;
+}
+export const INDIAN_STATES = [
+  "Andaman and Nicobar Islands",
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chandigarh",
+  "Chhattisgarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jammu and Kashmir",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Ladakh",
+  "Lakshadweep",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Puducherry",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+];
