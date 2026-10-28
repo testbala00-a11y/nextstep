@@ -7,8 +7,6 @@ import {
   ShieldCheck,
   Users,
   Building2,
-  BookOpen,
-  IndianRupee,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { ReactNode } from "react";
@@ -51,24 +49,12 @@ export function AdminShell({
           >
             <Building2 size={18} /> Colleges
           </Link>
-          <Link
-            to="/admin/courses"
-            className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold text-blue-800 hover:bg-blue-50"
-          >
-            <BookOpen size={18} /> Courses
-          </Link>
-          <Link
-            to="/admin/offerings"
-            className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold text-blue-800 hover:bg-blue-50"
-          >
-            <IndianRupee size={18} /> Course fees
-          </Link>
           {isSuperAdmin && (
             <Link
               to="/admin/staff"
               className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold text-blue-800 hover:bg-blue-50"
             >
-              <Users size={18} /> Staff access
+              <Users size={18} /> Staff logins
             </Link>
           )}
           <p className="flex items-center gap-2 px-4 py-3 text-sm text-slate-500">

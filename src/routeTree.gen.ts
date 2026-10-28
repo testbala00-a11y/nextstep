@@ -12,9 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminCollegesRouteImport } from './routes/admin.colleges'
-import { Route as AdminCoursesRouteImport } from './routes/admin.courses'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
-import { Route as AdminOfferingsRouteImport } from './routes/admin.offerings'
 import { Route as AdminOnboardingRouteImport } from './routes/admin.onboarding'
 import { Route as AdminResetPasswordRouteImport } from './routes/admin.reset-password'
 import { Route as AdminStaffRouteImport } from './routes/admin.staff'
@@ -41,19 +39,9 @@ const AdminCollegesRoute = AdminCollegesRouteImport.update({
   path: '/admin/colleges',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminCoursesRoute = AdminCoursesRouteImport.update({
-  id: '/admin/courses',
-  path: '/admin/courses',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminOfferingsRoute = AdminOfferingsRouteImport.update({
-  id: '/admin/offerings',
-  path: '/admin/offerings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminOnboardingRoute = AdminOnboardingRouteImport.update({
@@ -110,9 +98,7 @@ const StudentLoginRoute = StudentLoginRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin/colleges': typeof AdminCollegesRoute
-  '/admin/courses': typeof AdminCoursesRoute
   '/admin/login': typeof AdminLoginRoute
-  '/admin/offerings': typeof AdminOfferingsRoute
   '/admin/onboarding': typeof AdminOnboardingRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/staff': typeof AdminStaffRoute
@@ -128,9 +114,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin/colleges': typeof AdminCollegesRoute
-  '/admin/courses': typeof AdminCoursesRoute
   '/admin/login': typeof AdminLoginRoute
-  '/admin/offerings': typeof AdminOfferingsRoute
   '/admin/onboarding': typeof AdminOnboardingRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/staff': typeof AdminStaffRoute
@@ -147,9 +131,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin/colleges': typeof AdminCollegesRoute
-  '/admin/courses': typeof AdminCoursesRoute
   '/admin/login': typeof AdminLoginRoute
-  '/admin/offerings': typeof AdminOfferingsRoute
   '/admin/onboarding': typeof AdminOnboardingRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/staff': typeof AdminStaffRoute
@@ -167,9 +149,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin/colleges'
-    | '/admin/courses'
     | '/admin/login'
-    | '/admin/offerings'
     | '/admin/onboarding'
     | '/admin/reset-password'
     | '/admin/staff'
@@ -185,9 +165,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin/colleges'
-    | '/admin/courses'
     | '/admin/login'
-    | '/admin/offerings'
     | '/admin/onboarding'
     | '/admin/reset-password'
     | '/admin/staff'
@@ -203,9 +181,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin/colleges'
-    | '/admin/courses'
     | '/admin/login'
-    | '/admin/offerings'
     | '/admin/onboarding'
     | '/admin/reset-password'
     | '/admin/staff'
@@ -222,9 +198,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminCollegesRoute: typeof AdminCollegesRoute
-  AdminCoursesRoute: typeof AdminCoursesRoute
   AdminLoginRoute: typeof AdminLoginRoute
-  AdminOfferingsRoute: typeof AdminOfferingsRoute
   AdminOnboardingRoute: typeof AdminOnboardingRoute
   AdminResetPasswordRoute: typeof AdminResetPasswordRoute
   AdminStaffRoute: typeof AdminStaffRoute
@@ -261,25 +235,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCollegesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/courses': {
-      id: '/admin/courses'
-      path: '/admin/courses'
-      fullPath: '/admin/courses'
-      preLoaderRoute: typeof AdminCoursesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/offerings': {
-      id: '/admin/offerings'
-      path: '/admin/offerings'
-      fullPath: '/admin/offerings'
-      preLoaderRoute: typeof AdminOfferingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/onboarding': {
@@ -358,9 +318,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminCollegesRoute: AdminCollegesRoute,
-  AdminCoursesRoute: AdminCoursesRoute,
   AdminLoginRoute: AdminLoginRoute,
-  AdminOfferingsRoute: AdminOfferingsRoute,
   AdminOnboardingRoute: AdminOnboardingRoute,
   AdminResetPasswordRoute: AdminResetPasswordRoute,
   AdminStaffRoute: AdminStaffRoute,

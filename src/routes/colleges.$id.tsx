@@ -4,33 +4,33 @@ import { MapPin, Building2, ArrowLeft } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import {
   getColleges,
-  getCourses,
-  getOfferings,
+  getCollegeCourses,
   fee,
   externalUrl,
   type College,
-  type Course,
-  type Offering,
+  type CollegeCourse,
 } from "@/lib/college-data";
 export const Route = createFileRoute("/colleges/$id")({ component: Detail });
 function Detail() {
   const { id } = Route.useParams();
   const [college, setCollege] = useState<College | null>(null);
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [offers, setOffers] = useState<Offering[]>([]);
+  const [courses, setCourses] = useState<CollegeCourse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   useEffect(() => {
-    Promise.all([getColleges(), getCourses(), getOfferings()])
-      .then(([cc, co, of]) => {
+    Promise.all([getColleges(), getCollegeCourses(id)])
+      .then(([cc, co]) => {
         setCollege(cc.find((x) => x.id === id) || null);
         setCourses(co);
-        setOffers(of);
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [id]);
   const link = externalUrl(college?.source_url);
+  const groups = courses.reduce<Record<string, CollegeCourse[]>>((acc, c) => {
+    (acc[c.level || "Other"] ||= []).push(c);
+    return acc;
+  }, {});
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
       <SiteHeader />
@@ -113,30 +113,48 @@ function Detail() {
             </div>
             <section className="mt-9">
               <h2 className="mb-4 text-2xl font-bold text-brand-navy">Courses and fees</h2>
-              <div className="space-y-3">
-                {offers
-                  .filter((o) => o.college_id === id)
-                  .map((o) => {
-                    const c = courses.find((c) => c.id === o.course_id);
-                    return c ? (
-                      <div
-                        key={o.id}
-                        className="rounded-xl border bg-white p-5 sm:flex sm:items-center sm:justify-between"
-                      >
-                        <div>
-                          <h3 className="font-bold">{c.name}</h3>
-                          <p className="text-sm text-slate-500">
-                            {[c.credential, c.duration].filter(Boolean).join(" · ")}
-                          </p>
-                          {o.fee_notes && (
-                            <p className="mt-1 text-xs text-slate-500">{o.fee_notes}</p>
-                          )}
+              <div className="space-y-6">
+                {Object.entries(groups).map(([level, list]) => (
+                  <div key={level}>
+                    <h3 className="mb-2 text-sm font-bold uppercase tracking-wide text-emerald-700">
+                      {level} · {list.length} course{list.length === 1 ? "" : "s"}
+                    </h3>
+                    <div className="space-y-3">
+                      {list.map((c) => (
+                        <div
+                          key={c.id}
+                          className="rounded-xl border bg-white p-5 sm:flex sm:items-start sm:justify-between sm:gap-6"
+                        >
+                          <div>
+                            <h4 className="font-bold">{c.course_name}</h4>
+                            <p className="text-sm text-slate-500">
+                              {[c.stream, c.duration, c.seats != null && `${c.seats} seats`]
+                                .filter(Boolean)
+                                .join(" · ")}
+                            </p>
+                            {c.eligibility && (
+                              <p className="mt-1 text-sm">
+                                <strong>Eligibility:</strong> {c.eligibility}
+                              </p>
+                            )}
+                            {c.entrance_exams && (
+                              <p className="text-sm">
+                                <strong>Exams accepted:</strong> {c.entrance_exams}
+                              </p>
+                            )}
+                            {c.fee_notes && (
+                              <p className="mt-1 text-xs text-slate-500">{c.fee_notes}</p>
+                            )}
+                          </div>
+                          <strong className="mt-2 block shrink-0 sm:mt-0">
+                            {fee(c.tuition_fee)}
+                          </strong>
                         </div>
-                        <strong>{fee(o.tuition_fee)}</strong>
-                      </div>
-                    ) : null;
-                  })}
-                {offers.filter((o) => o.college_id === id).length === 0 && (
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                {courses.length === 0 && (
                   <p className="rounded-xl border bg-white p-5 text-slate-500">
                     No courses listed yet.
                   </p>

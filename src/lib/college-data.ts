@@ -22,12 +22,19 @@ export type Course = {
   entry_requirements: string;
   status: "draft" | "published" | "unpublished";
 };
-export type Offering = {
+export type CollegeCourse = {
   id: string;
   college_id: string;
-  course_id: string;
+  course_name: string;
+  level: string | null;
+  stream: string | null;
+  duration: string | null;
+  seats: number | null;
+  eligibility: string | null;
+  entrance_exams: string | null;
   tuition_fee: number | null;
   fee_notes: string | null;
+  sort_order: number;
 };
 export async function getColleges(includeDrafts = false) {
   let query = supabase.from("colleges").select("*").order("name");
@@ -43,10 +50,12 @@ export async function getCourses(includeDrafts = false) {
   if (error) throw error;
   return data || [];
 }
-export async function getOfferings() {
-  const { data, error } = await supabase.from("college_courses").select("*");
+export async function getCollegeCourses(collegeId?: string) {
+  let query = supabase.from("college_courses").select("*").order("sort_order").order("course_name");
+  if (collegeId) query = query.eq("college_id", collegeId);
+  const { data, error } = await query;
   if (error) throw error;
-  return data || [];
+  return (data || []) as CollegeCourse[];
 }
 export const fee = (n: number | null | undefined) =>
   n == null ? "Contact college for fees" : `₹${Number(n).toLocaleString("en-IN")}/year`;

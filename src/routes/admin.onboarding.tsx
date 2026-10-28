@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { CheckCircle2, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { getAdminState } from "@/lib/admin-auth";
+import { clearAdminState, getAdminState, needsOnboarding } from "@/lib/admin-auth";
 import { AdminShell } from "@/components/AdminShell";
 export const Route = createFileRoute("/admin/onboarding")({ component: AdminOnboarding });
 function AdminOnboarding() {
@@ -21,7 +21,7 @@ function AdminOnboarding() {
           navigate({ to: "/admin/login" });
           return;
         }
-        if (s.profile?.onboarding_completed_at) {
+        if (!needsOnboarding(s)) {
           navigate({ to: "/admin" });
           return;
         }
@@ -57,6 +57,7 @@ function AdminOnboarding() {
         .update({ full_name: name.trim(), onboarding_completed_at: new Date().toISOString() })
         .eq("id", user.id);
       if (saveError) throw saveError;
+      clearAdminState();
       navigate({ to: "/admin" });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save your profile.");

@@ -269,24 +269,48 @@ export type Database = {
       college_courses: {
         Row: {
           tuition_fee: number | null;
+          course_name: string;
+          level: string | null;
+          stream: string | null;
+          duration: string | null;
+          seats: number | null;
+          eligibility: string | null;
+          entrance_exams: string | null;
+          sort_order: number;
           fee_notes: string | null;
           college_id: string;
-          course_id: string;
+          course_id: string | null;
           created_at: string;
           id: string;
           updated_at: string;
         };
         Insert: {
           tuition_fee?: number | null;
+          course_name: string;
+          level?: string | null;
+          stream?: string | null;
+          duration?: string | null;
+          seats?: number | null;
+          eligibility?: string | null;
+          entrance_exams?: string | null;
+          sort_order?: number;
           fee_notes?: string | null;
           college_id: string;
-          course_id: string;
+          course_id?: string | null;
           created_at?: string;
           id?: string;
           updated_at?: string;
         };
         Update: {
           tuition_fee?: number | null;
+          course_name?: string;
+          level?: string | null;
+          stream?: string | null;
+          duration?: string | null;
+          seats?: number | null;
+          eligibility?: string | null;
+          entrance_exams?: string | null;
+          sort_order?: number;
           fee_notes?: string | null;
           college_id?: string;
           course_id?: string;
@@ -329,6 +353,7 @@ export type Database = {
           source_url: string | null;
           status: Database["public"]["Enums"]["content_status"];
           updated_at: string;
+          updated_by: string | null;
         };
         Insert: {
           image_url?: string | null;
@@ -347,6 +372,7 @@ export type Database = {
           source_url?: string | null;
           status?: Database["public"]["Enums"]["content_status"];
           updated_at?: string;
+          updated_by?: string | null;
         };
         Update: {
           image_url?: string | null;
@@ -365,6 +391,7 @@ export type Database = {
           source_url?: string | null;
           status?: Database["public"]["Enums"]["content_status"];
           updated_at?: string;
+          updated_by?: string | null;
         };
         Relationships: [];
       };
@@ -536,6 +563,20 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      is_nextstep_super_admin: {
+        Args: { _user: string };
+        Returns: boolean;
+      };
+      list_nextstep_staff: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          user_id: string;
+          email: string;
+          full_name: string | null;
+          access_level: string;
+          created_at: string;
+        }[];
+      };
       manage_nextstep_staff: {
         Args: { _email: string; _grant_access: boolean };
         Returns: string;

@@ -1,18 +1,47 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { BookOpen, Search } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
-import { getCourses, type Course } from "@/lib/college-data";
+import { getColleges, getCollegeCourses, type CollegeCourse } from "@/lib/college-data";
 export const Route = createFileRoute("/courses/")({ component: Courses });
+type CourseGroup = {
+  name: string;
+  level: string | null;
+  stream: string | null;
+  duration: string | null;
+  colleges: { id: string; name: string }[];
+};
+// Courses are entered per college; group identical names so each course lists its colleges.
+function groupCourses(rows: CollegeCourse[], names: Map<string, string>) {
+  const groups = new Map<string, CourseGroup>();
+  for (const r of rows) {
+    const college = names.get(r.college_id);
+    if (!college) continue;
+    const key = r.course_name.trim().toLowerCase();
+    const g = groups.get(key) ?? {
+      name: r.course_name,
+      level: r.level,
+      stream: r.stream,
+      duration: r.duration,
+      colleges: [],
+    };
+    g.colleges.push({ id: r.college_id, name: college });
+    groups.set(key, g);
+  }
+  return [...groups.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
 function Courses() {
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<CourseGroup[]>([]);
   const [q, setQ] = useState("");
   const [error, setError] = useState("");
   useEffect(() => {
-    getCourses()
-      .then(setCourses)
+    Promise.all([getColleges(), getCollegeCourses()])
+      .then(([colleges, rows]) =>
+        setCourses(groupCourses(rows, new Map(colleges.map((c) => [c.id, c.name])))),
+      )
       .catch((e) => setError(e.message));
   }, []);
+  const needle = q.toLowerCase();
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
       <SiteHeader />
@@ -36,25 +65,36 @@ function Courses() {
         )}
         <div className="grid gap-4 md:grid-cols-2">
           {courses
-            .filter((c) => (c.name + c.description).toLowerCase().includes(q.toLowerCase()))
+            .filter((c) => [c.name, c.stream, c.level].join(" ").toLowerCase().includes(needle))
             .map((c) => (
-              <article key={c.id} className="rounded-xl border bg-white p-6">
+              <article key={c.name} className="rounded-xl border bg-white p-6">
                 <BookOpen className="mb-3 text-blue-700" />
                 <h2 className="text-xl font-bold">{c.name}</h2>
                 <p className="mt-2 text-sm text-slate-500">
-                  {[c.credential, c.duration].filter(Boolean).join(" · ")}
+                  {[c.level, c.stream, c.duration].filter(Boolean).join(" · ")}
                 </p>
-                <p className="mt-3 text-slate-600">{c.description}</p>
-                <p className="mt-4 text-sm">
-                  <strong>Eligibility: </strong>
-                  {c.entry_requirements || "Contact the institution"}
+                <p className="mt-4 text-sm font-semibold">
+                  Offered at {c.colleges.length} college{c.colleges.length === 1 ? "" : "s"}
                 </p>
+                <ul className="mt-1 space-y-1 text-sm">
+                  {c.colleges.slice(0, 5).map((col) => (
+                    <li key={col.id}>
+                      <Link
+                        to="/colleges/$id"
+                        params={{ id: col.id }}
+                        className="text-blue-700 hover:underline"
+                      >
+                        {col.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </article>
             ))}
         </div>
         {!error && courses.length === 0 && (
           <p className="rounded-xl border bg-white p-6 text-slate-600">
-            No published courses yet. Admins can add courses in the dashboard.
+            No published courses yet. Admins add courses inside each college.
           </p>
         )}
       </main>

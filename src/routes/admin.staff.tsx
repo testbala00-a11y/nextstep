@@ -1,128 +1,179 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
-import { AdminShell } from "@/components/AdminShell";
-import { getAdminState } from "@/lib/admin-auth";
+import { Eye, EyeOff, UserPlus } from "lucide-react";
+import { AdminGate } from "@/components/AdminGate";
 import { supabase } from "@/integrations/supabase/client";
+import { createStaffLogin } from "@/lib/staff.functions";
 
-export const Route = createFileRoute("/admin/staff")({ component: StaffAccess });
+export const Route = createFileRoute("/admin/staff")({ component: Page });
+
+type StaffMember = {
+  user_id: string;
+  email: string;
+  full_name: string | null;
+  access_level: string;
+  created_at: string;
+};
+
+function Page() {
+  return (
+    <AdminGate superAdminOnly>
+      <StaffAccess />
+    </AdminGate>
+  );
+}
 
 function StaffAccess() {
-  const navigate = useNavigate();
-  const [allowed, setAllowed] = useState(false);
-  const [checking, setChecking] = useState(true);
-  const [email, setEmail] = useState("");
+  const [staff, setStaff] = useState<StaffMember[]>([]);
+  const [form, setForm] = useState({ fullName: "", email: "", password: "" });
+  const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  useEffect(() => {
-    let active = true;
-    getAdminState()
-      .then((state) => {
-        if (!active) return;
-        if (!state.user || !state.isAdmin) navigate({ to: "/admin/login" });
-        else if (!state.profile?.onboarding_completed_at) navigate({ to: "/admin/onboarding" });
-        else if (state.accessLevel !== "super_admin") navigate({ to: "/admin" });
-        else setAllowed(true);
-      })
-      .catch((err) => {
-        if (active) setError(err instanceof Error ? err.message : "Unable to verify privileges.");
-      })
-      .finally(() => {
-        if (active) setChecking(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, [navigate]);
 
-  async function changeAccess(event: FormEvent<HTMLFormElement>, grant: boolean) {
+  async function refresh() {
+    const { data, error } = await supabase.rpc("list_nextstep_staff");
+    if (error) throw error;
+    setStaff(data || []);
+  }
+  useEffect(() => {
+    refresh().catch((e) => setError(e.message));
+  }, []);
+
+  async function create(event: FormEvent) {
     event.preventDefault();
     setMessage("");
     setError("");
-    if (!grant && !window.confirm(`Revoke admin privileges for ${email.trim()}?`)) return;
     setBusy(true);
     try {
-      const { data, error: rpcError } = await supabase.rpc("manage_nextstep_staff", {
-        _email: email.trim().toLowerCase(),
-        _grant_access: grant,
-      });
-      if (rpcError) throw rpcError;
-      setMessage(String(data || "Access updated."));
-      setEmail("");
+      const { email } = await createStaffLogin({ data: form });
+      setMessage(`Staff login created for ${email}. Share the password with them securely.`);
+      setForm({ fullName: "", email: "", password: "" });
+      await refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Access change failed.");
+      setError(err instanceof Error ? err.message : "Could not create staff login.");
     } finally {
       setBusy(false);
     }
   }
 
+  async function revoke(member: StaffMember) {
+    if (!window.confirm(`Revoke admin access for ${member.email}?`)) return;
+    setMessage("");
+    setError("");
+    const { data, error } = await supabase.rpc("manage_nextstep_staff", {
+      _email: member.email,
+      _grant_access: false,
+    });
+    if (error) setError(error.message);
+    else {
+      setMessage(String(data || "Access revoked."));
+      refresh().catch((e) => setError(e.message));
+    }
+  }
+
   return (
-    <AdminShell isSuperAdmin={allowed}>
-      <h1 className="font-heading text-3xl font-bold text-brand-navy">Staff administrators</h1>
+    <>
+      <h1 className="font-heading text-3xl font-bold text-brand-navy">Staff logins</h1>
       <p className="mt-2 text-slate-600">
-        Only the super admin can grant or revoke staff access. Staff sign in using their own email
-        and password.
+        Create logins for staff who enter college data. Staff can add and edit colleges and courses;
+        only you can delete colleges or manage staff.
       </p>
-      {checking ? (
-        <p className="mt-6">Checking your permissions…</p>
-      ) : allowed ? (
-        <form
-          className="mt-7 max-w-xl rounded-2xl border bg-white p-6 shadow-sm"
-          onSubmit={(event) => changeAccess(event, true)}
-        >
-          <label htmlFor="staff-email" className="block text-sm font-semibold">
-            Verified staff account email
-          </label>
+      <form
+        className="mt-7 max-w-xl space-y-4 rounded-2xl border bg-white p-6 shadow-sm"
+        onSubmit={create}
+      >
+        <h2 className="flex items-center gap-2 text-lg font-bold">
+          <UserPlus size={20} /> New staff login
+        </h2>
+        <label className="block text-sm font-semibold">
+          Full name
           <input
-            id="staff-email"
+            required
+            value={form.fullName}
+            onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))}
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5"
+          />
+        </label>
+        <label className="block text-sm font-semibold">
+          Email
+          <input
             type="email"
             required
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            value={form.email}
+            onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
             placeholder="staff@example.com"
-            className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-3"
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5"
           />
-          <p className="mt-2 text-sm text-slate-500">
-            Staff must first create and verify a normal student account. This form grants
-            administrator access to that account.
-          </p>
-          <div className="mt-5 flex flex-wrap gap-3">
+        </label>
+        <label className="block text-sm font-semibold">
+          Password (min 8 characters)
+          <div className="mt-1 flex items-center rounded-lg border border-slate-300">
+            <input
+              type={show ? "text" : "password"}
+              required
+              minLength={8}
+              autoComplete="new-password"
+              value={form.password}
+              onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+              className="w-full rounded-lg px-3 py-2.5 outline-none"
+            />
             <button
-              disabled={busy}
-              type="submit"
-              className="rounded-lg bg-blue-700 px-5 py-3 font-semibold text-white disabled:opacity-50"
-            >
-              Grant staff access
-            </button>
-            <button
-              disabled={busy}
               type="button"
-              onClick={(event) =>
-                changeAccess(event as unknown as FormEvent<HTMLFormElement>, false)
-              }
-              className="rounded-lg border border-red-200 px-5 py-3 font-semibold text-red-700 disabled:opacity-50"
+              onClick={() => setShow((s) => !s)}
+              aria-label={show ? "Hide password" : "Show password"}
+              className="px-3 text-slate-500"
             >
-              Revoke staff access
+              {show ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          {message && (
-            <p role="status" className="mt-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">
-              {message}
-            </p>
-          )}
-          {error && (
-            <p role="alert" className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
-              {error}
-            </p>
-          )}
-        </form>
-      ) : (
-        error && (
-          <p role="alert" className="mt-5 text-red-700">
-            {error}
-          </p>
-        )
+        </label>
+        <button
+          disabled={busy}
+          type="submit"
+          className="rounded-lg bg-blue-700 px-5 py-3 font-semibold text-white disabled:opacity-50"
+        >
+          {busy ? "Creating…" : "Create staff login"}
+        </button>
+      </form>
+      {message && (
+        <p
+          role="status"
+          className="mt-4 max-w-xl rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800"
+        >
+          {message}
+        </p>
       )}
-    </AdminShell>
+      {error && (
+        <p role="alert" className="mt-4 max-w-xl rounded-lg bg-red-50 p-3 text-sm text-red-700">
+          {error}
+        </p>
+      )}
+      <h2 className="mt-10 text-xl font-bold text-brand-navy">Current admins</h2>
+      <div className="mt-3 space-y-2">
+        {staff.map((m) => (
+          <div
+            key={m.user_id}
+            className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-white p-4"
+          >
+            <div>
+              <p className="font-semibold">{m.full_name || m.email}</p>
+              <p className="text-sm text-slate-500">
+                {m.email} · {m.access_level === "super_admin" ? "Super admin" : "Staff"}
+              </p>
+            </div>
+            {m.access_level !== "super_admin" && (
+              <button
+                onClick={() => revoke(m)}
+                className="rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-700"
+              >
+                Revoke access
+              </button>
+            )}
+          </div>
+        ))}
+        {!staff.length && <p className="text-slate-500">No staff yet.</p>}
+      </div>
+    </>
   );
 }

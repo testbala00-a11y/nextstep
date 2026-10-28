@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { ArrowLeft, Eye, EyeOff, LockKeyhole, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { getAdminState } from "@/lib/admin-auth";
+import { clearAdminState, getAdminState, needsOnboarding } from "@/lib/admin-auth";
 export const Route = createFileRoute("/admin/login")({ component: AdminLogin });
 function AdminLogin() {
   const navigate = useNavigate();
@@ -11,6 +11,19 @@ function AdminLogin() {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  // Already signed in as an admin: go straight to the dashboard.
+  useEffect(() => {
+    let active = true;
+    getAdminState()
+      .then((s) => {
+        if (active && s.isAdmin)
+          navigate({ to: needsOnboarding(s) ? "/admin/onboarding" : "/admin" });
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [navigate]);
   async function submit(e: FormEvent) {
     e.preventDefault();
     setError("");
@@ -21,13 +34,14 @@ function AdminLogin() {
         password,
       });
       if (signInError) throw signInError;
+      clearAdminState();
       const result = await getAdminState();
       if (!result.isAdmin) {
         await supabase.auth.signOut();
         setError("This account does not have administrator access. Contact the NextStep owner.");
         return;
       }
-      navigate({ to: result.profile?.onboarding_completed_at ? "/admin" : "/admin/onboarding" });
+      navigate({ to: needsOnboarding(result) ? "/admin/onboarding" : "/admin" });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign-in failed. Please try again.");
     } finally {

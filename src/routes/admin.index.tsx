@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { BookOpen, Building2, BriefcaseBusiness, ClipboardList, Users, Bell } from "lucide-react";
-import { getAdminState } from "@/lib/admin-auth";
+import { getAdminState, needsOnboarding } from "@/lib/admin-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/AdminShell";
 export const Route = createFileRoute("/admin/")({ component: Dashboard });
@@ -23,16 +23,16 @@ function Dashboard() {
           navigate({ to: "/admin/login" });
           return;
         }
-        if (!s.profile?.onboarding_completed_at) {
+        if (needsOnboarding(s)) {
           navigate({ to: "/admin/onboarding" });
           return;
         }
-        setName(s.profile.full_name || "Administrator");
+        setName(s.profile?.full_name || "Administrator");
         setIsSuperAdmin(s.accessLevel === "super_admin");
         const tables = [
           "profiles",
           "careers",
-          "courses",
+          "college_courses",
           "colleges",
           "assessment_questions",
           "admission_notices",
@@ -60,7 +60,7 @@ function Dashboard() {
   const metrics: Metric[] = [
     { title: "Students", value: counts["profiles"] ?? null, icon: Users },
     { title: "Careers", value: counts["careers"] ?? null, icon: BriefcaseBusiness },
-    { title: "Courses", value: counts["courses"] ?? null, icon: BookOpen },
+    { title: "Courses", value: counts["college_courses"] ?? null, icon: BookOpen },
     { title: "Colleges", value: counts["colleges"] ?? null, icon: Building2 },
     {
       title: "Assessment questions",
