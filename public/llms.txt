@@ -1,0 +1,10 @@
+# NextStep
+
+> NextStep (https://www.nextstepinfo.in) is a free career guidance platform for students in India after 10th and 12th. It helps students explore careers and courses, search and compare colleges by fees, location and course, and build a personal next-step plan.
+
+## Key pages
+- [What to do after 12th – career guide](https://www.nextstepinfo.in/guides/after-12th): courses, careers and entrance exams after 12th Science, Commerce and Arts, with FAQs.
+- [Explore colleges](https://www.nextstepinfo.in/colleges): search colleges across India by location, type, course, exam and fees.
+- [Explore courses](https://www.nextstepinfo.in/courses): UG, PG, diploma and certificate courses and the colleges that offer them.
+- [Compare colleges](https://www.nextstepinfo.in/colleges/compare): compare up to 3 colleges side by side.
+- [Plan my next step](https://www.nextstepinfo.in/student/assessment): free planner that suggests courses and colleges based on interests, level and budget.

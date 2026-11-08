@@ -23,6 +23,7 @@ import { Route as CollegesIndexRouteImport } from './routes/colleges.index'
 import { Route as CollegesIdRouteImport } from './routes/colleges.$id'
 import { Route as CollegesCompareRouteImport } from './routes/colleges.compare'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
+import { Route as GuidesAfter12thRouteImport } from './routes/guides.after-12th'
 import { Route as StudentAssessmentRouteImport } from './routes/student.assessment'
 import { Route as StudentDashboardRouteImport } from './routes/student.dashboard'
 import { Route as StudentDetailsRouteImport } from './routes/student.details'
@@ -98,6 +99,11 @@ const CoursesIndexRoute = CoursesIndexRouteImport.update({
   path: '/courses/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GuidesAfter12thRoute = GuidesAfter12thRouteImport.update({
+  id: '/guides/after-12th',
+  path: '/guides/after-12th',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudentAssessmentRoute = StudentAssessmentRouteImport.update({
   id: '/student/assessment',
   path: '/student/assessment',
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AdminUsersRoute
   '/colleges/$id': typeof CollegesIdRoute
   '/colleges/compare': typeof CollegesCompareRoute
+  '/guides/after-12th': typeof GuidesAfter12thRoute
   '/student/assessment': typeof StudentAssessmentRoute
   '/student/dashboard': typeof StudentDashboardRoute
   '/student/details': typeof StudentDetailsRoute
@@ -151,6 +158,7 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AdminUsersRoute
   '/colleges/$id': typeof CollegesIdRoute
   '/colleges/compare': typeof CollegesCompareRoute
+  '/guides/after-12th': typeof GuidesAfter12thRoute
   '/student/assessment': typeof StudentAssessmentRoute
   '/student/dashboard': typeof StudentDashboardRoute
   '/student/details': typeof StudentDetailsRoute
@@ -172,6 +180,7 @@ export interface FileRoutesById {
   '/admin/users': typeof AdminUsersRoute
   '/colleges/$id': typeof CollegesIdRoute
   '/colleges/compare': typeof CollegesCompareRoute
+  '/guides/after-12th': typeof GuidesAfter12thRoute
   '/student/assessment': typeof StudentAssessmentRoute
   '/student/dashboard': typeof StudentDashboardRoute
   '/student/details': typeof StudentDetailsRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/colleges/$id'
     | '/colleges/compare'
+    | '/guides/after-12th'
     | '/student/assessment'
     | '/student/dashboard'
     | '/student/details'
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/colleges/$id'
     | '/colleges/compare'
+    | '/guides/after-12th'
     | '/student/assessment'
     | '/student/dashboard'
     | '/student/details'
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/colleges/$id'
     | '/colleges/compare'
+    | '/guides/after-12th'
     | '/student/assessment'
     | '/student/dashboard'
     | '/student/details'
@@ -255,6 +267,7 @@ export interface RootRouteChildren {
   AdminUsersRoute: typeof AdminUsersRoute
   CollegesIdRoute: typeof CollegesIdRoute
   CollegesCompareRoute: typeof CollegesCompareRoute
+  GuidesAfter12thRoute: typeof GuidesAfter12thRoute
   StudentAssessmentRoute: typeof StudentAssessmentRoute
   StudentDashboardRoute: typeof StudentDashboardRoute
   StudentDetailsRoute: typeof StudentDetailsRoute
@@ -364,6 +377,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoursesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/guides/after-12th': {
+      id: '/guides/after-12th'
+      path: '/guides/after-12th'
+      fullPath: '/guides/after-12th'
+      preLoaderRoute: typeof GuidesAfter12thRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/student/assessment': {
       id: '/student/assessment'
       path: '/student/assessment'
@@ -407,6 +427,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminUsersRoute: AdminUsersRoute,
   CollegesIdRoute: CollegesIdRoute,
   CollegesCompareRoute: CollegesCompareRoute,
+  GuidesAfter12thRoute: GuidesAfter12thRoute,
   StudentAssessmentRoute: StudentAssessmentRoute,
   StudentDashboardRoute: StudentDashboardRoute,
   StudentDetailsRoute: StudentDetailsRoute,

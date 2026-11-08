@@ -16,6 +16,9 @@ export function SiteHeader() {
           <Link to="/courses" className="hover:text-blue-700">
             Courses
           </Link>
+          <Link to="/guides/after-12th" className="hover:text-blue-700">
+            After 12th guide
+          </Link>
           <Link to="/student/assessment" className="hover:text-blue-700">
             Plan my next step
           </Link>
