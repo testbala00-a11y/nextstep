@@ -11,10 +11,13 @@ import {
   summarize,
   feeRange,
   splitExams,
+  normalizeLabel,
+  uniqueLabels,
   type College,
   type CollegeCourse,
   type CourseSummary,
 } from "@/lib/college-data";
+import { distanceKm, getPincodeCoordinates, type Coordinates } from "@/lib/postal-location";
 export const Route = createFileRoute("/colleges/")({
   head: () =>
     seo(
@@ -27,8 +30,6 @@ export const Route = createFileRoute("/colleges/")({
 type Row = College & { courses: CollegeCourse[]; summary: CourseSummary };
 const ALL = "all";
 const FEE_CAPS = [50000, 100000, 200000, 500000];
-const options = (rows: Row[], pick: (r: Row) => string[]) =>
-  Array.from(new Set(rows.flatMap(pick).filter(Boolean))).sort();
 function Colleges() {
   const [items, setItems] = useState<Row[]>([]);
   const [error, setError] = useState("");
@@ -36,12 +37,20 @@ function Colleges() {
   const [search, setSearch] = useState("");
   const [state, setState] = useState(ALL);
   const [district, setDistrict] = useState(ALL);
+  const [pincode, setPincode] = useState("");
+  const [pinCoordinates, setPinCoordinates] = useState<Coordinates | null>(null);
+  const [collegePinCoordinates, setCollegePinCoordinates] = useState<Map<string, Coordinates>>(
+    new Map(),
+  );
+  const [pinMessage, setPinMessage] = useState("");
+  const [pinLoading, setPinLoading] = useState(false);
   const [type, setType] = useState(ALL);
   const [level, setLevel] = useState(ALL);
   const [stream, setStream] = useState(ALL);
   const [exam, setExam] = useState(ALL);
   const [maxFee, setMaxFee] = useState(ALL);
-  const [sort, setSort] = useState("name");
+  const [topTenOnly, setTopTenOnly] = useState(false);
+  const [sort, setSort] = useState("top");
   const [notice, setNotice] = useState("");
   const compare = useCompare();
   useEffect(() => {
@@ -57,14 +66,75 @@ function Colleges() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
+  useEffect(() => {
+    const pin = pincode.trim();
+    if (!pin) {
+      setPinCoordinates(null);
+      setCollegePinCoordinates(new Map());
+      setPinMessage("");
+      setPinLoading(false);
+      return;
+    }
+    if (!/^\d{6}$/.test(pin)) {
+      setPinCoordinates(null);
+      setCollegePinCoordinates(new Map());
+      setPinMessage(pin.length === 6 ? "Enter a valid 6-digit Indian PIN code." : "");
+      setPinLoading(false);
+      return;
+    }
+
+    let active = true;
+    setPinLoading(true);
+    setPinMessage("");
+    const collegePins = Array.from(
+      new Set(
+        items
+          .map((college) => college.pincode?.trim())
+          .filter((value): value is string => !!value && /^\d{6}$/.test(value)),
+      ),
+    );
+    Promise.all([
+      getPincodeCoordinates(pin),
+      ...collegePins.map((collegePin) => getPincodeCoordinates(collegePin).catch(() => null)),
+    ])
+      .then(([searchedPin, ...collegePinsCoordinates]) => {
+        if (!active) return;
+        setPinCoordinates(searchedPin);
+        setCollegePinCoordinates(
+          new Map(
+            collegePins.flatMap((collegePin, index) => {
+              const coordinates = collegePinsCoordinates[index];
+              return coordinates ? [[collegePin, coordinates] as const] : [];
+            }),
+          ),
+        );
+        if (!searchedPin) setPinMessage("That PIN code was not found.");
+      })
+      .catch((e) => {
+        if (!active) return;
+        setPinCoordinates(null);
+        setCollegePinCoordinates(new Map());
+        setPinMessage(e instanceof Error ? e.message : "PIN-code lookup failed.");
+      })
+      .finally(() => {
+        if (active) setPinLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [items, pincode]);
   const filters = useMemo(
     () => ({
-      states: options(items, (r) => [r.state || ""]),
-      districts: options(items, (r) => (state === ALL || r.state === state ? [r.district] : [])),
-      types: options(items, (r) => [r.college_type]),
-      levels: options(items, (r) => r.summary.levels),
-      streams: options(items, (r) => r.summary.streams),
-      exams: options(items, (r) => r.summary.exams),
+      states: uniqueLabels(items.map((r) => r.state || "")),
+      districts: uniqueLabels(
+        items.flatMap((r) =>
+          state === ALL || normalizeLabel(r.state) === normalizeLabel(state) ? [r.district] : [],
+        ),
+      ),
+      types: uniqueLabels(items.map((r) => r.college_type)),
+      levels: uniqueLabels(items.flatMap((r) => r.summary.levels)),
+      streams: uniqueLabels(items.flatMap((r) => r.summary.streams)),
+      exams: uniqueLabels(items.flatMap((r) => r.summary.exams)),
     }),
     [items, state],
   );
@@ -76,7 +146,7 @@ function Colleges() {
       const courseMatch = c.courses.some(
         (x) =>
           (level === ALL || x.level === level) &&
-          (stream === ALL || x.stream?.trim() === stream) &&
+          (stream === ALL || normalizeLabel(x.stream) === normalizeLabel(stream)) &&
           (exam === ALL || splitExams(x.entrance_exams).some((e) => e.trim() === exam)) &&
           (cap == null || (x.tuition_fee != null && x.tuition_fee <= cap)),
       );
@@ -85,34 +155,52 @@ function Colleges() {
         c.name,
         c.district,
         c.state,
+        c.pincode,
         c.college_type,
         ...c.courses.map((x) => x.course_name),
       ]
         .join(" ")
         .toLowerCase();
+      const collegePinCoordinatesForCollege = c.pincode
+        ? collegePinCoordinates.get(c.pincode)
+        : undefined;
+      const matchesPincode =
+        !pincode.trim() ||
+        c.pincode === pincode.trim() ||
+        (!!pinCoordinates &&
+          !!collegePinCoordinatesForCollege &&
+          distanceKm(pinCoordinates, collegePinCoordinatesForCollege) <= 10);
       return (
         (!q || text.includes(q)) &&
-        (state === ALL || c.state === state) &&
-        (district === ALL || c.district === district) &&
-        (type === ALL || c.college_type === type) &&
+        (state === ALL || normalizeLabel(c.state) === normalizeLabel(state)) &&
+        (district === ALL || normalizeLabel(c.district) === normalizeLabel(district)) &&
+        (type === ALL || normalizeLabel(c.college_type) === normalizeLabel(type)) &&
+        (!topTenOnly || c.is_top_10) &&
+        matchesPincode &&
         (!courseFiltered || courseMatch)
       );
     })
     .sort((a, b) =>
-      sort === "fee"
-        ? (a.summary.minFee ?? Infinity) - (b.summary.minFee ?? Infinity)
-        : sort === "courses"
-          ? b.summary.count - a.summary.count
-          : a.name.localeCompare(b.name),
+      sort === "top"
+        ? Number(b.is_top_10) - Number(a.is_top_10) || a.name.localeCompare(b.name)
+        : sort === "fee"
+          ? (a.summary.minFee ?? Infinity) - (b.summary.minFee ?? Infinity)
+          : sort === "courses"
+            ? b.summary.count - a.summary.count
+            : a.name.localeCompare(b.name),
     );
   const activeFilters = [state, district, type, level, stream, exam, maxFee].filter(
     (f) => f !== ALL,
   );
+  if (pincode.trim()) activeFilters.push(pincode.trim());
+  if (topTenOnly) activeFilters.push("top-10");
   function resetFilters() {
     [setState, setDistrict, setType, setLevel, setStream, setExam, setMaxFee].forEach((s) =>
       s(ALL),
     );
     setSearch("");
+    setPincode("");
+    setTopTenOnly(false);
   }
   const select = (
     label: string,
@@ -154,12 +242,35 @@ function Colleges() {
             <Search className="text-slate-400" size={20} />
             <input
               aria-label="Search colleges"
-              placeholder="Search by college, city, or course (e.g. B.Tech, Nursing)"
+              placeholder="Search by college, city, state, or course"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full py-2.5 outline-none"
             />
           </label>
+          <label className="flex items-center gap-2 rounded-lg border px-3">
+            <MapPin className="text-slate-400" size={18} />
+            <input
+              aria-label="Search by PIN code"
+              placeholder="PIN code (approx. 10 km nearby search)"
+              inputMode="numeric"
+              maxLength={6}
+              value={pincode}
+              onChange={(e) => setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              className="w-full py-2.5 outline-none"
+            />
+            {pinLoading && <span className="text-xs text-slate-500">Searching…</span>}
+          </label>
+          {pinMessage && (
+            <p role="status" className="text-sm text-amber-700">
+              {pinMessage}
+            </p>
+          )}
+          {pincode.length === 6 && !pinMessage && (
+            <p className="text-xs text-slate-500">
+              Nearby matches use approximate PIN-code locations; colleges need a PIN code listing.
+            </p>
+          )}
           <div className="flex flex-wrap items-center gap-2">
             <SlidersHorizontal size={18} className="text-slate-400" />
             {select(
@@ -176,6 +287,14 @@ function Colleges() {
             {select("Filter college type", type, setType, filters.types, "All types")}
             {select("Filter course level", level, setLevel, filters.levels, "All levels")}
             {select("Filter stream", stream, setStream, filters.streams, "All streams")}
+            <label className="flex items-center gap-2 rounded-lg border bg-white px-3 py-2 text-sm">
+              <input
+                type="checkbox"
+                checked={topTenOnly}
+                onChange={(e) => setTopTenOnly(e.target.checked)}
+              />
+              Top 10 only
+            </label>
             {select("Filter entrance exam", exam, setExam, filters.exams, "Any exam")}
             {select(
               "Maximum annual fee",
@@ -202,6 +321,7 @@ function Colleges() {
             onChange={(e) => setSort(e.target.value)}
             className="rounded-lg border bg-white px-3 py-1.5"
           >
+            <option value="top">Sort: Top 10 first</option>
             <option value="name">Sort: Name</option>
             <option value="fee">Sort: Lowest fee</option>
             <option value="courses">Sort: Most courses</option>
@@ -247,9 +367,16 @@ function Colleges() {
                   )}
                 </Link>
                 <div className="flex flex-1 flex-col p-5">
-                  <span className="text-xs font-bold uppercase text-blue-600">
-                    {c.college_type || "College"}
-                  </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs font-bold uppercase text-blue-600">
+                      {c.college_type || "College"}
+                    </span>
+                    {c.is_top_10 && (
+                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800">
+                        Top 10
+                      </span>
+                    )}
+                  </div>
                   <Link to="/colleges/$id" params={{ id: c.id }}>
                     <h2 className="mt-1 text-xl font-bold text-brand-navy hover:text-blue-700">
                       {c.name}
@@ -257,7 +384,8 @@ function Colleges() {
                   </Link>
                   <p className="mt-1 flex items-center gap-1 text-sm text-slate-500">
                     <MapPin size={15} />
-                    {[c.district, c.state].filter(Boolean).join(", ") || "Location unavailable"}
+                    {[c.district, c.state, c.pincode].filter(Boolean).join(", ") ||
+                      "Location unavailable"}
                   </p>
                   <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
                     <p className="flex items-center gap-1.5 text-slate-700">

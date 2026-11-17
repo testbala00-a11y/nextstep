@@ -29,12 +29,20 @@ export const Route = createFileRoute("/colleges/$id")({
   loader: async ({ params }) =>
     (await getColleges().catch(() => [])).find((c) => c.id === params.id) ?? null,
   head: ({ params, loaderData: c }) => {
-    if (!c) return seo(`/colleges/${params.id}`, "College details | NextStep", "College fees, courses and admissions on NextStep.");
+    if (!c)
+      return seo(
+        `/colleges/${params.id}`,
+        "College details | NextStep",
+        "College fees, courses and admissions on NextStep.",
+      );
     const place = [c.district, c.state].filter(Boolean).join(", ");
     const page = seo(
       `/colleges/${c.id}`,
       `${c.name}, ${place} – Courses, Fees & Admission | NextStep`,
-      (c.description || `${c.name} in ${place}: courses, fees and admission details.`).slice(0, 160),
+      (c.description || `${c.name} in ${place}: courses, fees and admission details.`).slice(
+        0,
+        160,
+      ),
     );
     return {
       ...page,
@@ -46,7 +54,13 @@ export const Route = createFileRoute("/colleges/$id")({
             "@type": "CollegeOrUniversity",
             name: c.name,
             url: `${SITE_URL}/colleges/${c.id}`,
-            address: { "@type": "PostalAddress", streetAddress: c.address ?? undefined, addressLocality: c.district, addressRegion: c.state, addressCountry: "IN" },
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: c.address ?? undefined,
+              addressLocality: c.district,
+              addressRegion: c.state,
+              addressCountry: "IN",
+            },
             ...(c.image_url ? { image: c.image_url } : {}),
           }),
         },
@@ -150,10 +164,19 @@ function Detail() {
                 <span className="text-xs font-bold uppercase text-emerald-700">
                   {college.college_type || "College"}
                 </span>
-                <h1 className="mt-1 text-3xl font-bold text-brand-navy">{college.name}</h1>
+                <div className="mt-1 flex flex-wrap items-center gap-3">
+                  <h1 className="text-3xl font-bold text-brand-navy">{college.name}</h1>
+                  {college.is_top_10 && (
+                    <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-bold text-amber-800">
+                      Top 10
+                    </span>
+                  )}
+                </div>
                 <p className="mt-2 flex gap-2 text-slate-600">
                   <MapPin size={18} className="shrink-0" />
-                  {[college.address, college.district, college.state].filter(Boolean).join(", ")}
+                  {[college.address, college.district, college.state, college.pincode]
+                    .filter(Boolean)
+                    .join(", ")}
                 </p>
                 <div className="mt-5 flex flex-wrap gap-3">
                   <button
@@ -236,6 +259,11 @@ function Detail() {
                   <p className="mt-3 whitespace-pre-wrap text-slate-700">
                     {college.description || "Description coming soon."}
                   </p>
+                  {college.accreditation_details && (
+                    <p className="mt-4 whitespace-pre-wrap text-sm">
+                      <strong>Accreditation:</strong> {college.accreditation_details}
+                    </p>
+                  )}
                   {summary.levels.length > 0 && (
                     <p className="mt-4 text-sm">
                       <strong>Programme levels:</strong> {summary.levels.join(", ")}

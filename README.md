@@ -1,6 +1,6 @@
 # NextStep — independent GitHub + Supabase deployment
 
-NextStep is a React/TypeScript TanStack Start application for students to discover colleges and courses, and for verified administrators to manage institutions, images, course offerings, and fees. **No Lovable account or runtime is required.**
+NextStep is a React/TypeScript TanStack Start application for students to discover colleges and courses, and for verified administrators to manage institutions, accreditation details, Top 10 selections, PIN codes, course offerings, and fees. **No Lovable account or runtime is required.**
 
 ## Quick start in GitHub Codespaces
 
@@ -27,9 +27,9 @@ ON CONFLICT (user_id) DO UPDATE SET access_level = 'super_admin';
 
 - `/` welcome page
 - `/student/login` signup/login; `/student/dashboard` student area
-- `/colleges` college explorer; `/courses` courses
+- `/colleges` college explorer with city/state, stream, and 10 km PIN-code search; `/courses` courses
 - `/admin/login` secure admin sign-in; `/admin` admin overview
-- `/admin/colleges` college editor, photo URLs or Storage images
+- `/admin/colleges` college editor, accreditation details, PIN codes, and up to 10 Top 10 selections
 - `/admin/courses` course editor; `/admin/offerings` college/course fees
 - `/admin/staff` staff management (super admin only)
 
@@ -37,7 +37,7 @@ ON CONFLICT (user_id) DO UPDATE SET access_level = 'super_admin';
 
 This is a **TanStack Start server-rendered app**, not a static-only React build. Use a hosting platform that supports its generated server output (for example, a suitable Node deployment). Configure the same public/server Supabase environment values on the host. A basic GitHub Pages site will **not** serve it correctly. A build in Codespaces verifies bundling, not external deployment, database permissions, email delivery or live login.
 
-For images, the `college-images` Supabase Storage bucket and related policies are created by the SQL setup. Check storage upload policies and image sizes before publishing. Never expose `SUPABASE_SERVICE_ROLE_KEY` in a browser or commit it to GitHub.
+For an existing database, apply `drizzle/migrations/0007_college_accreditation_top10_pincodes.sql` in the Supabase SQL Editor. It adds college accreditation and PIN fields, migrates PIN codes embedded at the end of city names, and enforces the ten-college Top 10 limit. PIN-code proximity search uses postal-code coordinates from Zippopotam.us. Never expose `SUPABASE_SERVICE_ROLE_KEY` in a browser or commit it to GitHub.
 
 ## Production checklist
 

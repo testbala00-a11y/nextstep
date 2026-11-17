@@ -12,6 +12,9 @@ export type College = {
   fee_source_url: string | null;
   source_url: string | null;
   image_url?: string | null;
+  accreditation_details: string | null;
+  pincode: string | null;
+  is_top_10: boolean;
   status: "draft" | "published" | "unpublished";
 };
 export type Course = {
@@ -81,6 +84,17 @@ export type CourseSummary = {
 };
 const uniq = (xs: (string | null | undefined)[]) =>
   Array.from(new Set(xs.map((x) => x?.trim()).filter((x): x is string => !!x))).sort();
+export const normalizeLabel = (value: string | null | undefined) =>
+  (value || "").trim().replace(/\s+/g, " ").toLocaleLowerCase();
+export function uniqueLabels(values: (string | null | undefined)[]) {
+  const labels = new Map<string, string>();
+  for (const value of values) {
+    const label = (value || "").trim().replace(/\s+/g, " ");
+    const key = normalizeLabel(label);
+    if (key && !labels.has(key)) labels.set(key, label);
+  }
+  return Array.from(labels.values()).sort((a, b) => a.localeCompare(b));
+}
 export const splitExams = (s: string | null) => (s ? s.split(/[,;/]/) : []);
 export function summarize(courses: CollegeCourse[]): CourseSummary {
   const fees = courses.map((c) => c.tuition_fee).filter((f): f is number => f != null);

@@ -347,6 +347,7 @@ export type Database = {
       colleges: {
         Row: {
           image_url: string | null;
+          accreditation_details: string | null;
           address: string | null;
           annual_fee: number | null;
           college_type: string;
@@ -360,6 +361,8 @@ export type Database = {
           id: string;
           last_verified_at: string | null;
           name: string;
+          pincode: string | null;
+          is_top_10: boolean;
           source_url: string | null;
           status: Database["public"]["Enums"]["content_status"];
           updated_at: string;
@@ -367,6 +370,7 @@ export type Database = {
         };
         Insert: {
           image_url?: string | null;
+          accreditation_details?: string | null;
           address?: string | null;
           annual_fee?: number | null;
           college_type?: string;
@@ -380,6 +384,8 @@ export type Database = {
           id?: string;
           last_verified_at?: string | null;
           name: string;
+          pincode?: string | null;
+          is_top_10?: boolean;
           source_url?: string | null;
           status?: Database["public"]["Enums"]["content_status"];
           updated_at?: string;
@@ -387,6 +393,7 @@ export type Database = {
         };
         Update: {
           image_url?: string | null;
+          accreditation_details?: string | null;
           address?: string | null;
           annual_fee?: number | null;
           college_type?: string;
@@ -400,6 +407,8 @@ export type Database = {
           id?: string;
           last_verified_at?: string | null;
           name?: string;
+          pincode?: string | null;
+          is_top_10?: boolean;
           source_url?: string | null;
           status?: Database["public"]["Enums"]["content_status"];
           updated_at?: string;

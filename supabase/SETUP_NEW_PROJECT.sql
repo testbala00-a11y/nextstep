@@ -70,6 +70,9 @@ CREATE TABLE public.colleges (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
   district text NOT NULL DEFAULT '',
+  pincode text,
+  accreditation_details text,
+  is_top_10 boolean NOT NULL DEFAULT false,
   college_type text NOT NULL DEFAULT '',
   address text,
   description text NOT NULL DEFAULT '',
@@ -83,8 +86,35 @@ CREATE TABLE public.colleges (
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT colleges_annual_fee_nonnegative CHECK (annual_fee IS NULL OR annual_fee >= 0),
+ CONSTRAINT colleges_pincode_format CHECK (pincode IS NULL OR pincode ~ '^[0-9]{6}$'),
   CONSTRAINT colleges_verified_fee_has_evidence CHECK (NOT fee_verified OR (annual_fee IS NOT NULL AND fee_source_url IS NOT NULL AND fee_last_verified_at IS NOT NULL))
 );
+CREATE OR REPLACE FUNCTION public.enforce_college_top_10_limit()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = ''
+AS $$
+DECLARE
+ selected_count integer;
+BEGIN
+ IF NEW.is_top_10 THEN
+   IF TG_OP = 'UPDATE' AND OLD.is_top_10 THEN
+     RETURN NEW;
+   END IF;
+   PERFORM pg_advisory_xact_lock(9281, 10010);
+   SELECT count(*) INTO selected_count
+   FROM public.colleges
+   WHERE is_top_10 AND id <> NEW.id;
+   IF selected_count >= 10 THEN
+     RAISE EXCEPTION 'No more than 10 colleges can be marked Top 10.';
+   END IF;
+ END IF;
+ RETURN NEW;
+END;
+$$;
+CREATE TRIGGER colleges_top_10_limit
+BEFORE INSERT OR UPDATE OF is_top_10 ON public.colleges
+FOR EACH ROW EXECUTE FUNCTION public.enforce_college_top_10_limit();
 GRANT SELECT ON public.colleges TO anon;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.colleges TO authenticated;
 GRANT ALL ON public.colleges TO service_role;
@@ -207,6 +237,7 @@ CREATE INDEX user_roles_user_id_idx ON public.user_roles(user_id);
 CREATE INDEX careers_status_idx ON public.careers(status);
 CREATE INDEX courses_status_idx ON public.courses(status);
 CREATE INDEX colleges_status_district_type_idx ON public.colleges(status, district, college_type);
+CREATE INDEX colleges_pincode_idx ON public.colleges(pincode);
 CREATE INDEX college_courses_course_id_idx ON public.college_courses(course_id);
 CREATE INDEX college_courses_college_id_idx ON public.college_courses(college_id);
 CREATE INDEX career_courses_course_id_idx ON public.career_courses(course_id);
