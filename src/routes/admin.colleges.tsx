@@ -196,8 +196,6 @@ function Colleges() {
     setBusy(true);
     try {
       const source = externalUrl(form.source_url);
-      if (form.status === "published" && !source)
-        throw new Error("Publishing requires a valid official source URL.");
       if (form.fee_source_url && !externalUrl(form.fee_source_url))
         throw new Error("Fee source must be a valid HTTP(S) URL.");
       if (form.image_url && !externalUrl(form.image_url))
@@ -335,7 +333,7 @@ function Colleges() {
                 ["college_type", "College type"],
                 ["address", "Street address"],
                 ["annual_fee", "Indicative annual fees (INR)"],
-                ["source_url", "Official college source URL *"],
+                ["source_url", "Official college source URL (optional)"],
                 ["fee_source_url", "Fee source URL"],
                 ["image_url", "College image URL (optional)"],
               ] as const
@@ -343,7 +341,7 @@ function Colleges() {
               <label key={key} className="block text-sm font-medium">
                 {label}
                 <input
-                  required={key === "name" || (key === "source_url" && form.status === "published")}
+                  required={key === "name"}
                   type={key === "annual_fee" ? "number" : "text"}
                   min={key === "annual_fee" ? 0 : undefined}
                   value={form[key]}

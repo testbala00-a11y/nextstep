@@ -276,8 +276,8 @@ LANGUAGE plpgsql
 SET search_path = ''
 AS $$
 BEGIN
-  IF NEW.status = 'published' AND (NULLIF(btrim(NEW.source_url), '') IS NULL OR NEW.last_verified_at IS NULL) THEN
-    RAISE EXCEPTION 'Published college records require a source URL and verification date.';
+  IF NEW.status = 'published' AND NEW.last_verified_at IS NULL THEN
+    RAISE EXCEPTION 'Published college records require a verification date.';
   END IF;
   RETURN NEW;
 END;
