@@ -48,7 +48,11 @@ function Compare() {
       1,
   );
   const rows: [string, (p: (typeof picked)[number]) => string][] = [
-    ["Location", (p) => [p.college.district, p.college.state].filter(Boolean).join(", ") || "—"],
+    [
+      "Location",
+      (p) =>
+        [p.college.pincode, p.college.state, p.college.district].filter(Boolean).join(", ") || "—",
+    ],
     ["Type", (p) => p.college.college_type || "—"],
     ["Courses offered", (p) => String(p.summary.count)],
     ["Annual fee range", (p) => feeRange(p.summary)],

@@ -1,7 +1,7 @@
 import { noindex } from "@/lib/seo";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
-import { Plus, Edit2, Trash2, Save, X, Building2, BookOpen } from "lucide-react";
+import { Plus, Edit2, Trash2, Save, X, Building2, BookOpen, ImagePlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminGate, useAdminAccess } from "@/components/AdminGate";
 import {
@@ -26,6 +26,7 @@ const blank = {
   annual_fee: "",
   fee_source_url: "",
   source_url: "",
+  image_url: "",
   accreditation_details: "",
   pincode: "",
   is_top_10: false,
@@ -115,6 +116,7 @@ function Colleges() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
   async function refresh() {
     const [colleges, rows] = await Promise.all([getColleges(true), getCollegeCourses()]);
     setItems(colleges);
@@ -130,6 +132,32 @@ function Colleges() {
   }
   function updateCourse(key: string, k: keyof CourseRow, v: string) {
     setCourses((rows) => rows.map((r) => (r.key === key ? { ...r, [k]: v } : r)));
+  }
+  async function uploadCampusImage(file: File) {
+    setError("");
+    if (!file.type.startsWith("image/") || file.size > 5 * 1024 * 1024) {
+      setError("Upload a JPG, PNG or WebP image under 5 MB.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `colleges/${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage
+        .from("college-images")
+        .upload(path, file, { upsert: false, contentType: file.type });
+      if (error) throw error;
+      const { data } = supabase.storage.from("college-images").getPublicUrl(path);
+      update("image_url", data.publicUrl);
+    } catch (e) {
+      setError(
+        e instanceof Error
+          ? e.message
+          : "Upload failed. Apply the college-images Storage bucket migration first.",
+      );
+    } finally {
+      setUploading(false);
+    }
   }
   function reset() {
     setForm({ ...blank });
@@ -150,6 +178,7 @@ function Colleges() {
       annual_fee: c.annual_fee?.toString() || "",
       fee_source_url: c.fee_source_url || "",
       source_url: c.source_url || "",
+      image_url: c.image_url || "",
       accreditation_details: c.accreditation_details || "",
       pincode: c.pincode || "",
       is_top_10: c.is_top_10,
@@ -176,6 +205,8 @@ function Colleges() {
       const source = externalUrl(form.source_url);
       if (form.fee_source_url && !externalUrl(form.fee_source_url))
         throw new Error("Fee source must be a valid HTTP(S) URL.");
+      if (form.image_url && !externalUrl(form.image_url))
+        throw new Error("Campus image URL must be a valid HTTP(S) URL.");
       const pincode = form.pincode.trim();
       if (pincode && !/^\d{6}$/.test(pincode))
         throw new Error("PIN code must contain exactly 6 digits.");
@@ -188,6 +219,7 @@ function Colleges() {
         description: form.description.trim(),
         annual_fee: optionalNumber(form.annual_fee, "Fees"),
         source_url: source || null,
+        image_url: externalUrl(form.image_url) || null,
         fee_source_url: externalUrl(form.fee_source_url) || null,
         accreditation_details: form.accreditation_details.trim() || null,
         pincode: pincode || null,
@@ -317,6 +349,7 @@ function Colleges() {
                 ["pincode", "PIN code"],
                 ["source_url", "Official college source URL (optional)"],
                 ["fee_source_url", "Fee source URL"],
+                ["image_url", "Campus image URL (optional)"],
               ] as const
             ).map(([key, label]) => (
               <label key={key} className="block text-sm font-medium">
@@ -367,6 +400,52 @@ function Colleges() {
               className="mt-1 w-full rounded-lg border p-3"
             />
           </label>
+          <div className="flex flex-wrap items-center gap-4">
+            <label className="flex items-center gap-2 text-sm font-semibold">
+              <input
+                type="checkbox"
+                checked={form.is_top_10}
+                disabled={
+                  !form.is_top_10 && items.filter((college) => college.is_top_10).length >= 10
+                }
+                onChange={(e) =>
+                  setForm((current) => ({ ...current, is_top_10: e.target.checked }))
+                }
+              />
+              Mark as Top 10
+            </label>
+            <span className="text-xs text-slate-500">
+              {items.filter((college) => college.is_top_10).length}/10 selected
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-4">
+            <label className="cursor-pointer rounded-lg border px-4 py-2 text-sm font-semibold">
+              <ImagePlus size={17} className="mr-2 inline" />
+              {uploading ? "Uploading…" : "Upload campus image"}
+              <input
+                type="file"
+                className="sr-only"
+                accept="image/png,image/jpeg,image/webp"
+                disabled={uploading}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) void uploadCampusImage(file);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+            {form.image_url ? (
+              <img
+                src={form.image_url}
+                alt="Campus preview"
+                className="h-20 w-32 rounded-lg object-cover"
+              />
+            ) : (
+              <div className="flex h-20 w-32 items-center justify-center rounded-lg bg-blue-50">
+                <Building2 className="text-blue-400" />
+              </div>
+            )}
+          </div>
           <fieldset className="rounded-xl border border-blue-100 bg-blue-50/40 p-4">
             <legend className="flex items-center gap-2 px-1 font-bold text-brand-navy">
               <BookOpen size={18} /> Courses offered ({filledCount})
@@ -450,22 +529,6 @@ function Colleges() {
             </div>
           </fieldset>
           <div className="flex flex-wrap items-center gap-4">
-            <label className="flex items-center gap-2 text-sm font-semibold">
-              <input
-                type="checkbox"
-                checked={form.is_top_10}
-                disabled={
-                  !form.is_top_10 && items.filter((college) => college.is_top_10).length >= 10
-                }
-                onChange={(e) =>
-                  setForm((current) => ({ ...current, is_top_10: e.target.checked }))
-                }
-              />
-              Mark as Top 10
-            </label>
-            <span className="text-xs text-slate-500">
-              {items.filter((college) => college.is_top_10).length}/10 selected
-            </span>
             <select
               aria-label="Publication status"
               value={form.status}
@@ -481,7 +544,7 @@ function Colleges() {
             Only published colleges (and their courses) appear publicly.
           </p>
           <button
-            disabled={busy}
+            disabled={busy || uploading}
             className="inline-flex items-center gap-2 rounded-lg bg-blue-700 px-5 py-2.5 font-bold text-white disabled:opacity-50"
           >
             <Save size={17} />
@@ -506,9 +569,9 @@ function Colleges() {
               <h2 className="font-bold">{c.name}</h2>
               <p className="text-sm text-slate-500">
                 {[
-                  c.district,
                   c.pincode ? `PIN ${c.pincode}` : "",
                   c.state,
+                  c.district,
                   c.college_type,
                   c.status,
                   c.is_top_10 ? "Top 10" : "",

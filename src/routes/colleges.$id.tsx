@@ -156,7 +156,7 @@ function Detail() {
                   className="h-64 w-full object-cover"
                 />
               ) : (
-                <div className="flex h-44 items-center justify-center bg-blue-100">
+                <div className="flex h-64 items-center justify-center bg-blue-100">
                   <Building2 size={64} className="text-blue-500" />
                 </div>
               )}
@@ -174,7 +174,7 @@ function Detail() {
                 </div>
                 <p className="mt-2 flex gap-2 text-slate-600">
                   <MapPin size={18} className="shrink-0" />
-                  {[college.address, college.district, college.state, college.pincode]
+                  {[college.pincode, college.state, college.district, college.address]
                     .filter(Boolean)
                     .join(", ")}
                 </p>

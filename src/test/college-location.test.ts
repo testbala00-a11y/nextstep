@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { normalizeLabel, uniqueLabels } from "@/lib/college-data";
+import {
+  canonicalStreamLabel,
+  normalizeLabel,
+  uniqueLabels,
+  uniqueStreamLabels,
+} from "@/lib/college-data";
 import { distanceKm } from "@/lib/postal-location";
 
 describe("college location filters", () => {
@@ -9,6 +14,20 @@ describe("college location filters", () => {
       "ENGINEERING",
     ]);
     expect(normalizeLabel("  Tamil   Nadu ")).toBe("tamil nadu");
+  });
+
+  it("canonicalizes stream labels and merges duplicate design and medical variants", () => {
+    expect(
+      uniqueStreamLabels([
+        "ENGINEERING",
+        "Engineering",
+        "Design and Planning",
+        "Design & Planning",
+        "Medical",
+        "Medicine",
+      ]),
+    ).toEqual(["Design and Planning", "Engineering", "Medicine"]);
+    expect(canonicalStreamLabel(" medical ")).toBe("Medicine");
   });
 
   it("measures nearby PIN-code locations in kilometers", () => {

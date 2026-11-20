@@ -95,6 +95,17 @@ export function uniqueLabels(values: (string | null | undefined)[]) {
   }
   return Array.from(labels.values()).sort((a, b) => a.localeCompare(b));
 }
+export function canonicalStreamLabel(value: string | null | undefined) {
+  const label = (value || "").trim().replace(/\s+/g, " ");
+  const key = label.toLocaleLowerCase().replace(/\s*&\s*/g, " and ");
+  if (key === "engineering") return "Engineering";
+  if (key === "medical" || key === "medicine") return "Medicine";
+  if (key === "design and planning") return "Design and Planning";
+  return label;
+}
+export function uniqueStreamLabels(values: (string | null | undefined)[]) {
+  return uniqueLabels(values.map(canonicalStreamLabel));
+}
 export const splitExams = (s: string | null) => (s ? s.split(/[,;/]/) : []);
 export function summarize(courses: CollegeCourse[]): CourseSummary {
   const fees = courses.map((c) => c.tuition_fee).filter((f): f is number => f != null);

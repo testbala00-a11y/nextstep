@@ -13,6 +13,8 @@ import {
   splitExams,
   normalizeLabel,
   uniqueLabels,
+  canonicalStreamLabel,
+  uniqueStreamLabels,
   type College,
   type CollegeCourse,
   type CourseSummary,
@@ -133,7 +135,7 @@ function Colleges() {
       ),
       types: uniqueLabels(items.map((r) => r.college_type)),
       levels: uniqueLabels(items.flatMap((r) => r.summary.levels)),
-      streams: uniqueLabels(items.flatMap((r) => r.summary.streams)),
+      streams: uniqueStreamLabels(items.flatMap((r) => r.summary.streams)),
       exams: uniqueLabels(items.flatMap((r) => r.summary.exams)),
     }),
     [items, state],
@@ -146,7 +148,9 @@ function Colleges() {
       const courseMatch = c.courses.some(
         (x) =>
           (level === ALL || x.level === level) &&
-          (stream === ALL || normalizeLabel(x.stream) === normalizeLabel(stream)) &&
+          (stream === ALL ||
+            normalizeLabel(canonicalStreamLabel(x.stream)) ===
+              normalizeLabel(canonicalStreamLabel(stream))) &&
           (exam === ALL || splitExams(x.entrance_exams).some((e) => e.trim() === exam)) &&
           (cap == null || (x.tuition_fee != null && x.tuition_fee <= cap)),
       );
@@ -384,7 +388,7 @@ function Colleges() {
                   </Link>
                   <p className="mt-1 flex items-center gap-1 text-sm text-slate-500">
                     <MapPin size={15} />
-                    {[c.district, c.state, c.pincode].filter(Boolean).join(", ") ||
+                    {[c.pincode, c.state, c.district].filter(Boolean).join(", ") ||
                       "Location unavailable"}
                   </p>
                   <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
