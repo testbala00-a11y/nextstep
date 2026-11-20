@@ -51,7 +51,7 @@ function Compare() {
     [
       "Location",
       (p) =>
-        [p.college.pincode, p.college.state, p.college.district].filter(Boolean).join(", ") || "—",
+        [p.college.district, p.college.state].filter(Boolean).join(", ") || "—",
     ],
     ["Type", (p) => p.college.college_type || "—"],
     ["Courses offered", (p) => String(p.summary.count)],

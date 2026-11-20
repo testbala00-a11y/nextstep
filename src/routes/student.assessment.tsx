@@ -340,9 +340,7 @@ function Page() {
                         </Link>
                         <p className="flex items-center gap-1 text-xs text-slate-500">
                           <MapPin size={12} />
-                          {[m.college.pincode, m.college.state, m.college.district]
-                            .filter(Boolean)
-                            .join(", ")}
+                          {[m.college.district, m.college.state].filter(Boolean).join(", ")}
                         </p>
                       </div>
                       <div className="text-right">

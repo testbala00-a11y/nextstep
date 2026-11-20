@@ -388,8 +388,7 @@ function Colleges() {
                   </Link>
                   <p className="mt-1 flex items-center gap-1 text-sm text-slate-500">
                     <MapPin size={15} />
-                    {[c.pincode, c.state, c.district].filter(Boolean).join(", ") ||
-                      "Location unavailable"}
+                    {[c.district, c.state].filter(Boolean).join(", ") || "Location unavailable"}
                   </p>
                   <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
                     <p className="flex items-center gap-1.5 text-slate-700">

@@ -161,10 +161,7 @@ function Detail() {
                 </div>
               )}
               <div className="p-6">
-                <span className="text-xs font-bold uppercase text-emerald-700">
-                  {college.college_type || "College"}
-                </span>
-                <div className="mt-1 flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <h1 className="text-3xl font-bold text-brand-navy">{college.name}</h1>
                   {college.is_top_10 && (
                     <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-bold text-amber-800">
@@ -172,9 +169,17 @@ function Detail() {
                     </span>
                   )}
                 </div>
+                <p className="mt-1 text-sm font-bold uppercase text-emerald-700">
+                  {college.college_type || "College"}
+                </p>
+                {college.accreditation_details && (
+                  <p className="mt-1 text-sm font-medium text-slate-600">
+                    {college.accreditation_details}
+                  </p>
+                )}
                 <p className="mt-2 flex gap-2 text-slate-600">
                   <MapPin size={18} className="shrink-0" />
-                  {[college.pincode, college.state, college.district, college.address]
+                  {[college.address, college.district, college.pincode, college.state]
                     .filter(Boolean)
                     .join(", ")}
                 </p>
@@ -259,11 +264,6 @@ function Detail() {
                   <p className="mt-3 whitespace-pre-wrap text-slate-700">
                     {college.description || "Description coming soon."}
                   </p>
-                  {college.accreditation_details && (
-                    <p className="mt-4 whitespace-pre-wrap text-sm">
-                      <strong>Accreditation:</strong> {college.accreditation_details}
-                    </p>
-                  )}
                   {summary.levels.length > 0 && (
                     <p className="mt-4 text-sm">
                       <strong>Programme levels:</strong> {summary.levels.join(", ")}
